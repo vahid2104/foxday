@@ -14,7 +14,7 @@ test('baza: vərdişlər, məqsədlər, su, yuxu, pul', () => {
   const { migrate, db } = require('@/db');
   migrate(); migrate(); // idempotent
   const ver = db.getFirstSync('PRAGMA user_version').user_version;
-  assert.equal(ver, 3);
+  assert.equal(ver, 4);
   const H = require('@/db/habits');
   const G = require('@/db/goals');
   const W = require('@/db/health');
@@ -86,4 +86,32 @@ test('baza: vərdişlər, məqsədlər, su, yuxu, pul', () => {
   const ex = M.getTransactions(T, T).find((x: any) => x.kind === 'expense');
   M.updateExpense(ex.id, { ...M.getExpense(ex.id), category: 'food' });
   assert.equal(JSON.stringify(M.getExpenseByCategory(T, T)), JSON.stringify([{ category: 'food', pln: 11479 }]));
+});
+
+test('baza: abunəliklər', async () => {
+  const S = require('@/db/subscriptions');
+  const M = require('@/db/money');
+  const { today } = require('@/lib/dates');
+  const T = today();
+  const day = Number(T.slice(8));
+  const id = S.addSubscription({ name: 'Spotify', amountMinor: 2999, currency: 'PLN', dayOfMonth: day, category: 'subscription' });
+  let sub = S.getSubscriptions(T).find((x: any) => x.id === id);
+  assert.equal(sub.status.kind, 'soon');
+  assert.equal(sub.status.daysLeft, 0);
+  const before = M.getRangeTotals(T, T).expense;
+  await S.paySubscription(sub, T);
+  sub = S.getSubscriptions(T).find((x: any) => x.id === id);
+  assert.equal(sub.status.kind, 'paid');
+  assert.equal(M.getRangeTotals(T, T).expense - before, 2999);
+  S.unpaySubscription(id, T);
+  assert.equal(M.getRangeTotals(T, T).expense, before);
+  assert.equal(S.getSubscriptions(T).find((x: any) => x.id === id).status.kind, 'soon');
+  // xərci Pul siyahısından silmək ödənişi də ləğv edir
+  await S.paySubscription(S.getSubscription(id), T);
+  const tx = M.getTransactions(T, T).find((x: any) => x.kind === 'expense' && x.note === 'Spotify');
+  M.deleteTransaction('expense', tx.id);
+  assert.equal(S.getSubscriptions(T).find((x: any) => x.id === id).status.kind, 'soon');
+  assert.equal(S.getMonthlySubscriptionTotal(), 2999);
+  S.deleteSubscription(id);
+  assert.equal(S.getSubscriptions(T).length, 0);
 });

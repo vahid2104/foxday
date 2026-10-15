@@ -9,7 +9,8 @@ export const CATEGORY_ICONS: Record<ExpenseCategory, IconName> = {
   phone: 'phone',
   home: 'home',
   transport: 'arrow-up-right',
-  transfer: 'refresh',
+  transfer: 'arrow-up-right',
+  subscription: 'refresh',
   other: 'sparkle',
 };
 

@@ -124,6 +124,41 @@ const MIGRATIONS: string[] = [
   `
   ALTER TABLE habits ADD COLUMN times_per_week INTEGER NOT NULL DEFAULT 3;
   `,
+  // v4 — Abunəliklər, kalori, əhval
+  `
+  CREATE TABLE subscriptions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    amount_minor INTEGER NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'PLN',
+    day_of_month INTEGER NOT NULL,
+    category TEXT NOT NULL DEFAULT 'subscription',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE subscription_payments (
+    subscription_id INTEGER NOT NULL REFERENCES subscriptions(id) ON DELETE CASCADE,
+    period TEXT NOT NULL,
+    expense_id INTEGER,
+    paid_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (subscription_id, period)
+  );
+
+  CREATE TABLE food_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    name TEXT NOT NULL,
+    kcal INTEGER NOT NULL
+  );
+  CREATE INDEX idx_food_logs_date ON food_logs(date);
+
+  CREATE TABLE mood_logs (
+    date TEXT PRIMARY KEY,
+    mood INTEGER NOT NULL,
+    note TEXT
+  );
+  `,
 ];
 
 /** Bazanı ən son versiyaya gətirir. App açılanda bir dəfə çağırılır. */

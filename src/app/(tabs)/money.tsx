@@ -8,6 +8,7 @@ import { Button } from '@/components/form';
 import { Foxy } from '@/components/Foxy';
 import { Icon } from '@/components/Icon';
 import { CATEGORY_ICONS, PLATFORM_COLORS } from '@/components/money-meta';
+import { SubscriptionRow } from '@/components/SubscriptionRow';
 import { Card, IconBox, ProgressBar, Row, Screen, Text } from '@/components/ui';
 import {
   deleteTransaction,
@@ -19,6 +20,7 @@ import {
   type Platform,
   type Transaction,
 } from '@/db/money';
+import { getSubscriptions } from '@/db/subscriptions';
 import { useDbQuery } from '@/db/useDbQuery';
 import { addDays, monthRange, startOfWeek, today } from '@/lib/dates';
 import { formatMonthYear, formatRelativeDate, splitMinutes, WEEKDAYS_SHORT } from '@/lib/format-date';
@@ -77,6 +79,8 @@ export default function MoneyScreen() {
         />
       </Row>
 
+      {isCurrentMonth ? <SubscriptionsCard /> : null}
+
       {txs.length === 0 ? (
         <Card style={{ alignItems: 'center', paddingVertical: 28 }}>
           <Foxy mood="normal" size={96} />
@@ -131,6 +135,38 @@ export default function MoneyScreen() {
         </>
       )}
     </Screen>
+  );
+}
+
+/** Abunəliklər: ən təcili 3-ü + "Hamısı". */
+function SubscriptionsCard() {
+  const { t } = useTranslation();
+  const subs = useDbQuery(() => getSubscriptions());
+  return (
+    <Card style={{ gap: 14 }}>
+      <Row style={{ justifyContent: 'space-between' }}>
+        <Row style={{ gap: 8 }}>
+          <IconBox icon="refresh" color="textBrand" bg="bgBrandSubtle" size={32} rounded={10} iconSize={16} />
+          <Text variant="h3">{t('subs.title')}</Text>
+        </Row>
+        <Pressable onPress={() => router.push(subs.length ? '/subscriptions' : '/subscription/form')} hitSlop={8}>
+          <Text variant="bodyStrong" color="textBrand">
+            {subs.length ? t('subs.seeAll') : `+ ${t('subs.add')}`}
+          </Text>
+        </Pressable>
+      </Row>
+      {subs.length === 0 ? (
+        <Text variant="caption" color="textSecondary">
+          {t('subs.emptyText')}
+        </Text>
+      ) : (
+        subs
+          .slice(0, 3)
+          .map((s) => (
+            <SubscriptionRow key={s.id} sub={s} onPress={() => router.push({ pathname: '/subscription/form', params: { id: String(s.id) } })} />
+          ))
+      )}
+    </Card>
   );
 }
 

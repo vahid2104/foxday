@@ -6,10 +6,12 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Foxy, type FoxyMood } from '@/components/Foxy';
 import { HabitRow } from '@/components/HabitRow';
+import { SubscriptionRow } from '@/components/SubscriptionRow';
 import { Card, IconBox, ProgressBar, Row, Screen, Text } from '@/components/ui';
 import { getMissedOn, getTodayHabits } from '@/db/habits';
 import { addWater, anythingLogged, getSleep, getWaterMl } from '@/db/health';
 import { getDayEarnings } from '@/db/money';
+import { getSubscriptions } from '@/db/subscriptions';
 import { useDbQuery } from '@/db/useDbQuery';
 import { addDays, today } from '@/lib/dates';
 import { formatLongDate, splitMinutes } from '@/lib/format-date';
@@ -29,6 +31,7 @@ export default function TodayScreen() {
   const waterMl = useDbQuery(() => getWaterMl(date));
   const sleep = useDbQuery(() => getSleep(date));
   const logged = useDbQuery(() => anythingLogged(date));
+  const urgentSubs = useDbQuery(() => getSubscriptions(date).filter((s) => s.status.kind === 'soon' || s.status.kind === 'overdue'));
 
   const todays = habits.filter((h) => h.due || h.todayStatus);
   const counted = todays.filter((h) => h.todayStatus !== 'skipped');
@@ -108,6 +111,14 @@ export default function TodayScreen() {
         </View>
         <Foxy mood={mood} size={96} />
       </Card>
+
+      {urgentSubs.length > 0 ? (
+        <Card style={{ gap: 14 }}>
+          {urgentSubs.map((s) => (
+            <SubscriptionRow key={s.id} sub={s} onPress={() => router.push('/subscriptions')} />
+          ))}
+        </Card>
+      ) : null}
 
       <Row style={{ alignItems: 'stretch' }}>
         <Pressable style={{ flex: 1 }} onPress={() => router.push('/income/new')}>

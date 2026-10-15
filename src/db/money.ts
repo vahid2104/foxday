@@ -5,8 +5,8 @@ import { db, notifyDbChanged } from './index';
 export type Platform = 'uber' | 'glovo' | 'wolt' | 'other';
 export const PLATFORMS: Platform[] = ['uber', 'glovo', 'wolt', 'other'];
 
-export type ExpenseCategory = 'bike' | 'food' | 'phone' | 'home' | 'transport' | 'transfer' | 'other';
-export const EXPENSE_CATEGORIES: ExpenseCategory[] = ['bike', 'food', 'phone', 'home', 'transport', 'transfer', 'other'];
+export type ExpenseCategory = 'bike' | 'food' | 'phone' | 'home' | 'transport' | 'transfer' | 'subscription' | 'other';
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = ['bike', 'food', 'phone', 'home', 'transport', 'transfer', 'subscription', 'other'];
 
 export type WorkSessionInput = {
   date: string;
@@ -45,17 +45,20 @@ export function addWorkSession(s: WorkSessionInput) {
   notifyDbChanged();
 }
 
-export function addExpense(e: ExpenseInput) {
+export function addExpense(e: ExpenseInput): number {
   const plnMinor = Math.round(e.amountMinor * e.rateToPln);
-  db.runSync(
+  const res = db.runSync(
     `INSERT INTO expenses (date, amount_minor, currency, rate_to_pln, amount_pln_minor, category, note)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [e.date, e.amountMinor, e.currency, e.rateToPln, plnMinor, e.category, e.note],
   );
   notifyDbChanged();
+  return res.lastInsertRowId;
 }
 
 export function deleteTransaction(kind: 'income' | 'expense', id: number) {
+  // Abunəlik ödənişi silinirsə, həmin ay yenidən "ödənilməyib" olsun
+  if (kind === 'expense') db.runSync('DELETE FROM subscription_payments WHERE expense_id = ?', [id]);
   db.runSync(`DELETE FROM ${kind === 'income' ? 'work_sessions' : 'expenses'} WHERE id = ?`, [id]);
   notifyDbChanged();
 }

@@ -1,6 +1,10 @@
 import { Platform } from 'react-native';
 
 import { getHabits } from '@/db/habits';
+import { getSubscriptions } from '@/db/subscriptions';
+import { addDays, fromISODate, today } from '@/lib/dates';
+import { formatMoney } from '@/lib/money';
+import { addMonths, dueDate, periodOf, REMIND_DAYS } from '@/lib/subscriptions';
 import i18n from '@/i18n';
 import { useSettings } from '@/store/settings';
 
@@ -115,6 +119,29 @@ async function doSync() {
       content: { title: t('notifications.eveningTitle'), body: t('notifications.eveningBody') },
       trigger: daily(EVENING.hour, EVENING.minute),
     });
+  }
+
+  // Abunəliklər: ödəniş günündən 3 gün qabaq və həmin gün saat 10:00-da (növbəti 2 ay üçün)
+  const now = Date.now();
+  for (const sub of getSubscriptions()) {
+    const amount = formatMoney(sub.amountMinor, sub.currency);
+    for (const period of [periodOf(today()), addMonths(periodOf(today()), 1)]) {
+      if (sub.paidPeriods.has(period)) continue;
+      const due = dueDate(period, sub.dayOfMonth);
+      const reminders: [string, string, string][] = [
+        [addDays(due, -REMIND_DAYS), t('notifications.subSoonTitle', { name: sub.name, count: REMIND_DAYS }), t('notifications.subSoonBody', { amount })],
+        [due, t('notifications.subTodayTitle', { name: sub.name }), t('notifications.subTodayBody', { amount })],
+      ];
+      for (const [day, title, body] of reminders) {
+        const when = fromISODate(day);
+        when.setHours(10, 0, 0, 0);
+        if (when.getTime() <= now) continue;
+        await Notifications.scheduleNotificationAsync({
+          content: { title, body },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when, channelId: CHANNEL },
+        });
+      }
+    }
   }
 
   if (s.notifHabits) {
