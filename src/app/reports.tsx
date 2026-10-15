@@ -7,6 +7,7 @@ import { Icon } from '@/components/Icon';
 import { PLATFORM_COLORS } from '@/components/money-meta';
 import { Card, IconBox, ProgressBar, Row, Text } from '@/components/ui';
 import { getAllLogs, getHabits } from '@/db/habits';
+import { getKcalByDay, getMoodAverage, MOOD_EMOJI, type Mood } from '@/db/food';
 import { getSleepRange, getWaterByDay } from '@/db/health';
 import { getExpenseByCategory, getPlatformSplit, getRangeTotals } from '@/db/money';
 import { useDbQuery } from '@/db/useDbQuery';
@@ -234,13 +235,17 @@ function HealthReport({ from, to }: { from: string; to: string }) {
   const days = Math.max(1, daysBetween(from, end) + 1);
   const totalWater = Object.values(water).reduce((a, b) => a + b, 0);
   const avgWater = totalWater > 0 ? totalWater / days : null;
+  const mood = useDbQuery(() => getMoodAverage(from, to));
+  const kcalDays = Object.values(useDbQuery(() => getKcalByDay(from, to)));
+  const avgKcal = kcalDays.length ? Math.round(kcalDays.reduce((a, b) => a + b, 0) / kcalDays.length) : null;
 
   return (
     <Card>
       <SectionHead icon="heart" color="accentSleep" bg="bgSleepSubtle" title={t('reports.health')} />
-      {avgSleep == null && avgWater == null ? (
+      {avgSleep == null && avgWater == null && mood == null && avgKcal == null ? (
         <Text color="textSecondary">{t('reports.noData')}</Text>
       ) : (
+        <>
         <Row style={{ gap: spacing.sm }}>
           <Mini
             label={t('reports.avgSleep')}
@@ -255,6 +260,16 @@ function HealthReport({ from, to }: { from: string; to: string }) {
             bg={colors.bgWaterSubtle}
           />
         </Row>
+        <Row style={{ gap: spacing.sm }}>
+          <Mini
+            label={t('reports.avgMood')}
+            value={mood != null ? `${MOOD_EMOJI[Math.round(mood) as Mood]} ${mood.toFixed(1).replace('.', ',')}` : '—'}
+            color="textBrand"
+            bg={colors.bgBrandSubtle}
+          />
+          <Mini label={t('reports.avgKcal')} value={avgKcal != null ? `${avgKcal} kcal` : '—'} color="textBrand" bg={colors.bgBrandSubtle} />
+        </Row>
+        </>
       )}
     </Card>
   );

@@ -12,7 +12,7 @@ import { useSettings } from '@/store/settings';
 import { spacing, useTheme, type ColorTokens } from '@/theme';
 
 type Option = {
-  key: 'income' | 'expense' | 'water' | 'habit' | 'sleep' | 'goal';
+  key: 'income' | 'expense' | 'water' | 'habit' | 'sleep' | 'goal' | 'food' | 'subscription';
   icon: IconName;
   color: keyof ColorTokens;
   bg: keyof ColorTokens;
@@ -26,6 +26,8 @@ const OPTIONS: Option[] = [
   { key: 'habit', icon: 'check', color: 'accentSuccess', bg: 'bgSuccessSubtle', href: '/habit/form' },
   { key: 'sleep', icon: 'moon', color: 'accentSleep', bg: 'bgSleepSubtle', href: '/sleep/new' },
   { key: 'goal', icon: 'target', color: 'textBrand', bg: 'bgBrandSubtle', href: '/goal/form' },
+  { key: 'food', icon: 'flame', color: 'textBrand', bg: 'bgBrandSubtle', href: '/food/new' },
+  { key: 'subscription', icon: 'refresh', color: 'accentSleep', bg: 'bgSleepSubtle', href: '/subscription/form' },
 ];
 
 /** Sürətli əlavə menyusu (Figma: "06 · Sürətli əlavə"). */

@@ -87,6 +87,8 @@ const en: typeof az = {
     yesterday: 'Yesterday',
   },
   add: {
+    food: 'Food',
+    subscription: 'Subscription',
     title: 'What shall we add?',
     income: 'Income',
     expense: 'Expense',
@@ -251,6 +253,7 @@ const en: typeof az = {
     cta: 'Start again today',
   },
   settings: {
+    calorieGoal: 'Calorie goal',
     testNotif: 'Test notification',
     testNotifSub: 'Arrives in 5 seconds',
     testSent: 'Sent! Wait 5 seconds — you can close the app too.',
@@ -314,6 +317,8 @@ const en: typeof az = {
     miuiHelp: 'In the settings that open:\n\n1. Autostart → turn on\n2. Battery saver → choose “No restrictions”\n\nThis makes reminders arrive on time.',
   },
   reports: {
+    avgMood: 'Avg. mood',
+    avgKcal: 'Avg. calories',
     title: 'Reports',
     week: 'Week',
     month: 'Month',
@@ -408,6 +413,27 @@ const en: typeof az = {
       mood7: '7 mood logs',
       subs3: '3 payments on time',
     },
+  },
+  food: {
+    title: 'Calories',
+    goal: 'goal {{goal}} kcal',
+    left: '{{kcal}} kcal left',
+    over: '{{kcal}} kcal over goal',
+    add: 'Add food',
+    newTitle: 'Food log',
+    name: 'What did you eat?',
+    namePlaceholder: 'e.g. chicken kebab',
+    kcal: 'Calories (kcal)',
+    frequent: 'Quick add',
+    empty: 'No food logged today yet',
+    nameRequired: 'Enter the food name',
+    kcalRequired: 'Enter the calories',
+    deleteTitle: 'Delete?',
+    holdHint: 'Long-press to delete',
+  },
+  mood: {
+    question: 'How do you feel today?',
+    labels: { 1: 'Bad', 2: 'Low', 3: 'Okay', 4: 'Good', 5: 'Great' },
   },
   common: {
     comingSoon: 'Coming soon',

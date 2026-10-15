@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Foxy, type FoxyMood } from '@/components/Foxy';
 import { HabitRow } from '@/components/HabitRow';
+import { MoodPicker } from '@/components/MoodPicker';
 import { SubscriptionRow } from '@/components/SubscriptionRow';
 import { Card, IconBox, ProgressBar, Row, Screen, Text } from '@/components/ui';
 import { getMissedOn, getTodayHabits } from '@/db/habits';
@@ -211,6 +212,8 @@ export default function TodayScreen() {
           ) : null}
         </Card>
       </Pressable>
+
+      <MoodPicker />
 
       <Row style={{ justifyContent: 'space-between' }}>
         <Text variant="h3">{t('today.habitsTitle')}</Text>

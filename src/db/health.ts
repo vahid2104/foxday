@@ -79,8 +79,10 @@ export function anythingLogged(date: string): boolean {
       (SELECT COUNT(*) FROM water_logs WHERE date = ?) +
       (SELECT COUNT(*) FROM sleep_logs WHERE date = ?) +
       (SELECT COUNT(*) FROM work_sessions WHERE date = ?) +
-      (SELECT COUNT(*) FROM expenses WHERE date = ?) AS n`,
-    [date, date, date, date, date],
+      (SELECT COUNT(*) FROM expenses WHERE date = ?) +
+      (SELECT COUNT(*) FROM food_logs WHERE date = ?) +
+      (SELECT COUNT(*) FROM mood_logs WHERE date = ?) AS n`,
+    [date, date, date, date, date, date, date],
   );
   return (r?.n ?? 0) > 0;
 }

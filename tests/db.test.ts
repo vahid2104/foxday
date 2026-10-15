@@ -115,3 +115,21 @@ test('baza: abunəliklər', async () => {
   S.deleteSubscription(id);
   assert.equal(S.getSubscriptions(T).length, 0);
 });
+
+test('baza: kalori və əhval', () => {
+  const F = require('@/db/food');
+  const { today } = require('@/lib/dates');
+  const T = today();
+  F.addFood(T, 'Dönər', 650); F.addFood(T, 'Dönər', 700); F.addFood(T, 'Alma', 80);
+  assert.equal(F.getKcal(T), 1430);
+  const freq = F.getFrequentFoods();
+  assert.equal(freq[0].name, 'Dönər');
+  assert.equal(freq[0].kcal, 700);
+  F.deleteFood(F.getFoods(T)[0].id);
+  assert.equal(F.getKcal(T), 780);
+  F.setMood(T, 4);
+  assert.equal(F.getMood(T), 4);
+  assert.equal(F.getMoodAverage(T, T), 4);
+  F.setMood(T, null);
+  assert.equal(F.getMood(T), null);
+});

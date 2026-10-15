@@ -85,6 +85,8 @@ export default {
     yesterday: 'Dünən',
   },
   add: {
+    food: 'Yemək',
+    subscription: 'Abunəlik',
     title: 'Nə əlavə edək?',
     income: 'Gəlir',
     expense: 'Xərc',
@@ -249,6 +251,7 @@ export default {
     cta: 'Bu gün yenidən başla',
   },
   settings: {
+    calorieGoal: 'Kalori hədəfi',
     testNotif: 'Test bildirişi',
     testNotifSub: '5 saniyə sonra gəlir',
     testSent: 'Göndərildi! 5 saniyə gözlə — app-i bağlaya da bilərsən.',
@@ -312,6 +315,8 @@ export default {
     miuiHelp: 'Açılan ayarlarda:\n\n1. Autostart → aktiv et\n2. Batareya qənaəti → “Məhdudiyyət yoxdur” seç\n\nBunlar xatırlatmaların vaxtında gəlməsi üçündür.',
   },
   reports: {
+    avgMood: 'Orta əhval',
+    avgKcal: 'Orta kalori',
     title: 'Hesabat',
     week: 'Həftə',
     month: 'Ay',
@@ -406,6 +411,27 @@ export default {
       mood7: '7 əhval qeydi',
       subs3: '3 vaxtında ödəniş',
     },
+  },
+  food: {
+    title: 'Kalori',
+    goal: 'hədəf {{goal}} kcal',
+    left: '{{kcal}} kcal qalıb',
+    over: 'Hədəfdən {{kcal}} kcal çox',
+    add: 'Yemək əlavə et',
+    newTitle: 'Yemək qeydi',
+    name: 'Nə yedin?',
+    namePlaceholder: 'Məsələn: toyuq dönər',
+    kcal: 'Kalori (kcal)',
+    frequent: 'Tez əlavə et',
+    empty: 'Bu gün hələ yemək qeyd olunmayıb',
+    nameRequired: 'Yeməyin adını yaz',
+    kcalRequired: 'Kalorini yaz',
+    deleteTitle: 'Silinsin?',
+    holdHint: 'Silmək üçün basıb saxla',
+  },
+  mood: {
+    question: 'Bu gün özünü necə hiss edirsən?',
+    labels: { 1: 'Pis', 2: 'Zəif', 3: 'Normal', 4: 'Yaxşı', 5: 'Əla' },
   },
   common: {
     comingSoon: 'Tezliklə',

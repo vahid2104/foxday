@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
+import { CaloriesCard } from '@/components/CaloriesCard';
 import { Stars } from '@/components/controls';
 import { Button } from '@/components/form';
 import { Foxy, type FoxyMood } from '@/components/Foxy';
@@ -30,6 +31,7 @@ export default function HealthScreen() {
       </Row>
       <WaterCard />
       <SleepCard />
+      <CaloriesCard />
       <FoxyTip />
     </Screen>
   );

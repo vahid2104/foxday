@@ -118,6 +118,11 @@ export default function SettingsScreen() {
           title={t('settings.incomeGoal')}
           right={<Stepper value={s.monthlyIncomeGoal} onChange={(v) => s.set({ monthlyIncomeGoal: v })} step={500} min={500} max={20000} format={formatPln} />}
         />
+        <ListRow
+          icon="flame"
+          title={t('settings.calorieGoal')}
+          right={<Stepper value={s.calorieGoal} onChange={(v) => s.set({ calorieGoal: v })} step={100} min={1200} max={4500} format={(v) => `${v} kcal`} />}
+        />
       </Card>
 
       <SectionLabel>{t('settings.notifications')}</SectionLabel>
