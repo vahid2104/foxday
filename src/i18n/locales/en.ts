@@ -253,6 +253,13 @@ const en: typeof az = {
     cta: 'Start again today',
   },
   settings: {
+    export: 'CSV export',
+    exportSub: 'A file for Excel and Google Sheets',
+    exportChoose: 'Which data to export?',
+    exportMoney: 'Money',
+    exportHabits: 'Habits',
+    exportHealth: 'Health',
+    exportFail: 'Sharing files is not available on this device.',
     calorieGoal: 'Calorie goal',
     testNotif: 'Test notification',
     testNotifSub: 'Arrives in 5 seconds',

@@ -253,6 +253,13 @@ const ru: typeof az = {
     cta: 'Начать заново сегодня',
   },
   settings: {
+    export: 'Экспорт CSV',
+    exportSub: 'Файл для Excel и Google Sheets',
+    exportChoose: 'Какие данные экспортировать?',
+    exportMoney: 'Деньги',
+    exportHabits: 'Привычки',
+    exportHealth: 'Здоровье',
+    exportFail: 'На этом устройстве нельзя поделиться файлом.',
     calorieGoal: 'Цель по калориям',
     testNotif: 'Тестовое уведомление',
     testNotifSub: 'Придёт через 5 секунд',

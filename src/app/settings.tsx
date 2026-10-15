@@ -10,6 +10,7 @@ import { TextField } from '@/components/form';
 import { formatHours, formatLiters, formatPln } from '@/components/goal-format';
 import { Foxy } from '@/components/Foxy';
 import { Card, Row, Text } from '@/components/ui';
+import { exportCsv, type ExportKind } from '@/services/export';
 import { hasPermission, requestPermission, sendTestNotification } from '@/services/notifications';
 import { useSettings, type Language, type ThemePreference } from '@/store/settings';
 import { spacing } from '@/theme';
@@ -185,6 +186,24 @@ export default function SettingsScreen() {
         <ListRow icon="chart" iconColor="accentSleep" iconBg="bgSleepSubtle" title={t('settings.reports')} onPress={() => router.push('/reports')} />
         <ListRow icon="refresh" title={t('subs.title')} onPress={() => router.push('/subscriptions')} />
         <ListRow icon="phone" title={t('settings.miui')} subtitle={t('settings.miuiSub')} onPress={openMiui} />
+        <ListRow
+          icon="arrow-up-right"
+          iconColor="accentSuccess"
+          iconBg="bgSuccessSubtle"
+          title={t('settings.export')}
+          subtitle={t('settings.exportSub')}
+          onPress={() => {
+            const run = async (kind: ExportKind) => {
+              const ok = await exportCsv(kind, t('settings.export'));
+              if (!ok) Alert.alert('⚠️', t('settings.exportFail'));
+            };
+            Alert.alert(t('settings.export'), t('settings.exportChoose'), [
+              { text: t('settings.exportMoney'), onPress: () => run('money') },
+              { text: t('settings.exportHabits'), onPress: () => run('habits') },
+              { text: t('settings.exportHealth'), onPress: () => run('health') },
+            ], { cancelable: true });
+          }}
+        />
         <ListRow icon="shield" iconColor="accentSuccess" iconBg="bgSuccessSubtle" title={t('settings.backup')} value={t('settings.soon')} />
       </Card>
 

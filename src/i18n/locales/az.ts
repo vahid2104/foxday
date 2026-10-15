@@ -251,6 +251,13 @@ export default {
     cta: 'Bu gün yenidən başla',
   },
   settings: {
+    export: 'CSV ixracı',
+    exportSub: 'Excel və Google Sheets üçün fayl',
+    exportChoose: 'Hansı məlumatları ixrac edək?',
+    exportMoney: 'Pul',
+    exportHabits: 'Vərdişlər',
+    exportHealth: 'Sağlamlıq',
+    exportFail: 'Bu cihazda fayl paylaşmaq mümkün deyil.',
     calorieGoal: 'Kalori hədəfi',
     testNotif: 'Test bildirişi',
     testNotifSub: '5 saniyə sonra gəlir',
