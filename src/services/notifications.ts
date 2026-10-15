@@ -1,9 +1,10 @@
-import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { getHabits } from '@/db/habits';
 import i18n from '@/i18n';
 import { useSettings } from '@/store/settings';
+
+import { getNotificationsApi, type NotificationsApi } from './notifications-native';
 
 /**
  * Yerli bildirişlər (internet və server lazım deyil).
@@ -14,6 +15,8 @@ const WATER_HOURS = [9, 11, 13, 15, 17, 19, 21];
 export const EVENING = { hour: 21, minute: 30 };
 
 export function configureNotifications() {
+  const Notifications = getNotificationsApi();
+  if (!Notifications) return;
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowBanner: true,
@@ -24,7 +27,7 @@ export function configureNotifications() {
   });
 }
 
-async function ensureChannel() {
+async function ensureChannel(Notifications: NotificationsApi) {
   if (Platform.OS !== 'android') return;
   await Notifications.setNotificationChannelAsync(CHANNEL, {
     name: i18n.t('notifications.channel'),
@@ -34,13 +37,17 @@ async function ensureChannel() {
 }
 
 export async function hasPermission(): Promise<boolean> {
+  const Notifications = getNotificationsApi();
+  if (!Notifications) return false;
   const { status } = await Notifications.getPermissionsAsync();
   return status === 'granted';
 }
 
 /** İcazə istəyir. Android 13+ üçün əvvəlcə kanal yaradılmalıdır. */
 export async function requestPermission(): Promise<boolean> {
-  await ensureChannel();
+  const Notifications = getNotificationsApi();
+  if (!Notifications) return false;
+  await ensureChannel(Notifications);
   const { status } = await Notifications.requestPermissionsAsync();
   if (status === 'granted') await syncReminders();
   return status === 'granted';
@@ -59,13 +66,15 @@ export function syncReminders(): Promise<void> {
 }
 
 async function doSync() {
+  const Notifications = getNotificationsApi();
+  if (!Notifications) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
   if (!(await hasPermission())) return;
-  await ensureChannel();
+  await ensureChannel(Notifications);
   const s = useSettings.getState();
   const t = i18n.t.bind(i18n);
   const daily = (hour: number, minute: number) => ({
-    type: Notifications.SchedulableTriggerInputTypes.DAILY as const,
+    type: Notifications.SchedulableTriggerInputTypes.DAILY,
     hour,
     minute,
     channelId: CHANNEL,
