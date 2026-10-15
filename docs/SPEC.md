@@ -286,6 +286,58 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 - [x] Arxa fon tapşırığı (~15 dəq): addımları yazır, limitləri yoxlayır
 - [ ] APK build (EAS) — ekran vaxtı və addımlar yalnız APK-da işləyir (Expo Go-da "APK-da işləyəcək")
 
+## 9.2 Növbəti planlar (backlog) — hissə-hissə ediləcək
+
+> 2026-10-16-da qeyd olundu. APK yalnız app tam istədiyim səviyyəyə çatanda qurulacaq.
+
+### A. Uzunmüddətli tasklar və steplər
+- Uzunmüddətli task (layihə) əlavə etmək: ad, təsvir, deadline (istəyə görə)
+- Taskın içində steplər: əlavə et, sırala, tamamla
+- Hər stepə işlədikcə vaxt əlavə etmək: taymer (başlat / dayandır) və ya əllə "45 dəq"
+- Task üzrə ümumi sərf olunan vaxt, irəliləyiş (%) və steplər üzrə vaxt bölgüsü
+- Qeyd: mövcud "addımlı məqsədlər" (goal_steps) bunun əsası ola bilər, ya da ayrıca `tasks` modulu
+
+### B. Gündəlik vaxt qrafiki (timeline)
+- Günün saatları üzrə diaqram və ya cədvəl: hansı saatlarda nə ilə məşğul olmuşam
+- Mənbələr: kuryer iş sessiyaları (başlama–bitmə), yuxu, task steplərinə yazılan vaxtlar, planlaşdırılmış tasklar
+- Rənglər kateqoriyaya görə (iş, task, yuxu, boş vaxt)
+- Gün / həftə görünüşü, "bu həftə ən çox nəyə vaxt getdi" xülasəsi
+
+### C. Ağıllı planlaşdırma (boş vaxta görə məsləhət)
+- Task yazanda: təxmini lazım olan vaxt + deadline
+- App boş vaxtlarımı tapır (iş, yuxu və digər planlı tasklardan kənar) və deadline-a qədər ən uyğun vaxtı (1–3 variant) təklif edir
+- Mən təsdiq edəndə task həmin gün və saata yazılır və həmin vaxt bildiriş gəlir
+- Uzun tasklar bir neçə hissəyə bölünüb müxtəlif günlərə düşə bilər
+- Açıq suallar: iş saatlarım sabit deyil — boş vaxt keçmiş iş sessiyalarına görə təxmin edilsin, yoxsa "işləmədiyim saatlar"ı özüm qeyd edim? Gün ərzində hansı saatlar planlaşdırmaya açıqdır (məs. 08:00–23:00)?
+
+### D. Təxirə salma
+- Planlı taskı başqa günə / saata keçirmək (bir toxunuşla "sabah", "bu axşam" və ya özüm seçim)
+- Təxirə salanda app yenidən boş vaxt təklif edə bilər; deadline-a yaxınlaşırsa xəbərdarlıq
+- Bildirişin üstündən birbaşa "Təxirə sal" düyməsi
+- Neçə dəfə təxirə salındığı qeyd olunsun (Foxy yumşaq xatırlatma edə bilər)
+
+## 9.3 APK build qeydləri (sonraya)
+
+Hər şey hazır olanda Windows-da, foxday qovluğunda:
+
+```
+git pull
+npm install
+npx eas-cli@latest login
+npx eas-cli@latest build -p android --profile preview
+```
+
+- "Create an EAS project?" → **Yes**; "Generate a new Android Keystore?" → **Yes**
+- 10–20 dəq sonra link/QR çıxır → telefonda aç, APK-nı quraşdır (naməlum mənbələrə icazə)
+- Build `app.json`-a layihə ID-si yazır → `git add app.json`, `git commit -m "EAS layihəsi"`, `git push`
+- Kotlin modulu (ekran vaxtı, addımlar) ilk dəfə EAS-da kompilyasiya olunacaq — xəta olsa log Claude-a göndərilsin
+
+Quraşdırandan sonra:
+- Expo Go-dakı məlumatlar APK-ya keçmir (təmiz başlayır)
+- Onboarding-də icazələr: Bildirişlər, Ekran vaxtı (Foxday → "İstifadəyə icazə ver"), Addım sayğacı
+- Redmi: Foxday üçün Autostart aktiv, batareya "Məhdudiyyət yoxdur"
+- Ayarlar → Test bildirişi ilə yoxla
+
 ## 10. Açıq suallar
 
 - [x] App-in adı → **Foxday**
@@ -318,4 +370,6 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 | 2026-10-16 | Animasiyalar Lottie əvəzinə Reanimated ilə (fayl lazım deyil, Expo Go-da işləyir) |
 | 2026-10-16 | Tam versiya APK-dan əvvəl: abunəliklər, XP/nişanlar, kalori/əhval/CSV, ekran vaxtı, addımlar |
 | 2026-10-16 | Ekran vaxtı və addımlar üçün öz Kotlin modulumuz (Expo Modules API); Health Connect lazım olmadı |
+| 2026-10-16 | APK build-i təxirə salındı — app tam istənilən səviyyəyə çatanda qurulacaq |
+| 2026-10-16 | Backlog: uzunmüddətli tasklar + steplər + vaxt yazma, gündəlik timeline, ağıllı planlaşdırma, təxirə salma |
 | 2026-10-16 | Addımlar: sensor telefon yandırılandan bəri sayır → hər oxunuşda fərq yazılır, reboot nəzərə alınır |
