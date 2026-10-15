@@ -13,6 +13,14 @@ import { Foxy } from '@/components/Foxy';
 import { Icon, type IconName } from '@/components/Icon';
 import { Card, IconBox, Row, Text } from '@/components/ui';
 import { requestPermission } from '@/services/notifications';
+import {
+  hasUsageAccess,
+  openUsageAccessSettings,
+  requestActivityPermission,
+  syncSteps,
+  trackerAvailable,
+} from '@/services/tracker';
+import { useLive } from '@/hooks/useForegroundTick';
 import { useSettings, type Language } from '@/store/settings';
 import { radius, spacing, useTheme, type ColorTokens } from '@/theme';
 
@@ -29,6 +37,8 @@ export default function OnboardingScreen() {
   const settings = useSettings();
   const [step, setStep] = useState(0);
   const [notifAllowed, setNotifAllowed] = useState(false);
+  const [stepsAllowed, setStepsAllowed] = useState(false);
+  const usageAllowed = useLive(() => hasUsageAccess());
 
   const finish = () => {
     settings.set({ onboardingDone: true });
@@ -145,6 +155,32 @@ export default function OnboardingScreen() {
                 done={notifAllowed}
                 onPress={async () => setNotifAllowed(await requestPermission())}
               />
+              {trackerAvailable() ? (
+                <>
+                  <PermRow
+                    icon="phone"
+                    color="textBrand"
+                    bg="bgBrandSubtle"
+                    title={t('onboarding.permUsage')}
+                    sub={t('onboarding.permUsageSub')}
+                    done={usageAllowed}
+                    onPress={openUsageAccessSettings}
+                  />
+                  <PermRow
+                    icon="bike"
+                    color="accentSuccess"
+                    bg="bgSuccessSubtle"
+                    title={t('onboarding.permSteps')}
+                    sub={t('onboarding.permStepsSub')}
+                    done={stepsAllowed}
+                    onPress={async () => {
+                      const ok = await requestActivityPermission();
+                      setStepsAllowed(ok);
+                      if (ok) syncSteps();
+                    }}
+                  />
+                </>
+              ) : null}
               <PermRow icon="refresh" color="accentSleep" bg="bgSleepSubtle" title={t('onboarding.permAutostart')} sub={t('onboarding.permAutostartSub')} onPress={openMiui} />
               <PermRow icon="shield" color="accentSuccess" bg="bgSuccessSubtle" title={t('onboarding.permBattery')} sub={t('onboarding.permBatterySub')} onPress={openMiui} />
             </>

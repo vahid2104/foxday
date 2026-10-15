@@ -8,6 +8,7 @@ import { Stars } from '@/components/controls';
 import { Button } from '@/components/form';
 import { Foxy, type FoxyMood } from '@/components/Foxy';
 import { Icon } from '@/components/Icon';
+import { ScreenTimeCard, StepsCard } from '@/components/TrackerCards';
 import { Card, IconBox, Row, Screen, Text } from '@/components/ui';
 import { addWater, getSleep, getSleepRange, getWaterMl, undoLastWater } from '@/db/health';
 import { useDbQuery } from '@/db/useDbQuery';
@@ -31,7 +32,9 @@ export default function HealthScreen() {
       </Row>
       <WaterCard />
       <SleepCard />
+      <StepsCard />
       <CaloriesCard />
+      <ScreenTimeCard />
       <FoxyTip />
     </Screen>
   );

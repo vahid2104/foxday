@@ -159,6 +159,33 @@ const MIGRATIONS: string[] = [
     note TEXT
   );
   `,
+  // v5 — Ekran vaxtı limitləri, addımlar
+  `
+  CREATE TABLE app_limits (
+    package_name TEXT PRIMARY KEY,
+    label TEXT NOT NULL,
+    limit_min INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE app_limit_alerts (
+    package_name TEXT NOT NULL,
+    date TEXT NOT NULL,
+    level INTEGER NOT NULL,
+    PRIMARY KEY (package_name, date, level)
+  );
+
+  CREATE TABLE step_state (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    last_counter INTEGER NOT NULL,
+    last_date TEXT NOT NULL
+  );
+
+  CREATE TABLE steps_daily (
+    date TEXT PRIMARY KEY,
+    steps INTEGER NOT NULL
+  );
+  `,
 ];
 
 /** Bazanı ən son versiyaya gətirir. App açılanda bir dəfə çağırılır. */

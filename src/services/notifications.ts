@@ -168,3 +168,16 @@ async function doSync() {
     }
   }
 }
+
+/** Dərhal bildiriş göndərir (məs. ekran vaxtı limiti). Bildiriş icazəsi yoxdursa, sakitcə heç nə etmir. */
+export async function notifyNow(title: string, body: string): Promise<void> {
+  const Notifications = getNotificationsApi();
+  if (!Notifications) return;
+  try {
+    if (!(await hasPermission())) return;
+    await ensureChannel(Notifications);
+    await Notifications.scheduleNotificationAsync({ content: { title, body }, trigger: { channelId: CHANNEL } });
+  } catch (e) {
+    console.warn('notifyNow', e);
+  }
+}

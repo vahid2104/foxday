@@ -14,7 +14,7 @@ test('baza: vərdişlər, məqsədlər, su, yuxu, pul', () => {
   const { migrate, db } = require('@/db');
   migrate(); migrate(); // idempotent
   const ver = db.getFirstSync('PRAGMA user_version').user_version;
-  assert.equal(ver, 4);
+  assert.equal(ver, 5);
   const H = require('@/db/habits');
   const G = require('@/db/goals');
   const W = require('@/db/health');
@@ -132,4 +132,28 @@ test('baza: kalori və əhval', () => {
   assert.equal(F.getMoodAverage(T, T), 4);
   F.setMood(T, null);
   assert.equal(F.getMood(T), null);
+});
+
+test('baza: addımlar və app limitləri', () => {
+  const Tr = require('@/db/tracker');
+  const { today, addDays } = require('@/lib/dates');
+  const T = today();
+  const Y = addDays(T, -1);
+  assert.equal(Tr.recordStepReading(10000, Y), 0); // ilk oxunuş — başlanğıc
+  assert.equal(Tr.recordStepReading(12500, Y), 2500);
+  assert.equal(Tr.recordStepReading(13000, T), 500);
+  assert.equal(Tr.recordStepReading(300, T), 300); // telefon yenidən başladı
+  assert.equal(Tr.getSteps(Y), 2500);
+  assert.equal(Tr.getSteps(T), 800);
+  assert.equal(JSON.stringify(Tr.getStepsByDay(Y, T)), JSON.stringify({ [Y]: 2500, [T]: 800 }));
+
+  Tr.setAppLimit('com.instagram.android', 'Instagram', 60);
+  Tr.setAppLimit('com.instagram.android', 'Instagram', 45);
+  assert.equal(Tr.getAppLimits().length, 1);
+  assert.equal(Tr.getAppLimit('com.instagram.android').limitMin, 45);
+  assert.equal(Tr.claimLimitAlert('com.instagram.android', T, 80), true);
+  assert.equal(Tr.claimLimitAlert('com.instagram.android', T, 80), false);
+  assert.equal(Tr.claimLimitAlert('com.instagram.android', T, 100), true);
+  Tr.removeAppLimit('com.instagram.android');
+  assert.equal(Tr.getAppLimit('com.instagram.android'), null);
 });

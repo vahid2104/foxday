@@ -27,6 +27,8 @@ type SettingsState = {
   lastLevel: number;
   /** Gündəlik kalori hədəfi. */
   calorieGoal: number;
+  /** Gündəlik addım hədəfi */
+  stepGoal: number;
   set: (patch: Partial<Omit<SettingsState, 'set'>>) => void;
 };
 
@@ -50,6 +52,7 @@ export const useSettings = create<SettingsState>()(
       lastMissedShown: '',
       lastLevel: 0,
       calorieGoal: 2400,
+      stepGoal: 8000,
       set: (patch) => set(patch),
     }),
     {

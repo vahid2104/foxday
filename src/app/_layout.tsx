@@ -9,10 +9,12 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useSyncExternalStore } from 'react';
+import { AppState } from 'react-native';
 
 import { migrate } from '@/db';
 import i18n from '@/i18n';
 import { configureNotifications, syncReminders } from '@/services/notifications';
+import { refreshTracker, registerBackgroundTracker } from '@/services/tracker';
 import { useSettings } from '@/store/settings';
 import { useTheme } from '@/theme';
 
@@ -61,6 +63,17 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
   }, [ready]);
+
+  // Addımlar və ekran vaxtı limitləri: açılışda, ön plana qayıdanda və arxa fonda (~15 dəq)
+  useEffect(() => {
+    if (!hydrated) return;
+    registerBackgroundTracker();
+    refreshTracker();
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') refreshTracker();
+    });
+    return () => sub.remove();
+  }, [hydrated]);
 
   if (!ready) return null;
 

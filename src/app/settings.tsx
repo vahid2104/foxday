@@ -124,6 +124,13 @@ export default function SettingsScreen() {
           title={t('settings.calorieGoal')}
           right={<Stepper value={s.calorieGoal} onChange={(v) => s.set({ calorieGoal: v })} step={100} min={1200} max={4500} format={(v) => `${v} kcal`} />}
         />
+        <ListRow
+          icon="bike"
+          iconColor="accentSuccess"
+          iconBg="bgSuccessSubtle"
+          title={t('settings.stepGoal')}
+          right={<Stepper value={s.stepGoal} onChange={(v) => s.set({ stepGoal: v })} step={1000} min={2000} max={30000} format={(v) => `${v}`} />}
+        />
       </Card>
 
       <SectionLabel>{t('settings.notifications')}</SectionLabel>
@@ -185,6 +192,7 @@ export default function SettingsScreen() {
         <ListRow first icon="sparkle" title={t('xp.title')} onPress={() => router.push('/achievements')} />
         <ListRow icon="chart" iconColor="accentSleep" iconBg="bgSleepSubtle" title={t('settings.reports')} onPress={() => router.push('/reports')} />
         <ListRow icon="refresh" title={t('subs.title')} onPress={() => router.push('/subscriptions')} />
+        <ListRow icon="clock" title={t('screenTime.title')} onPress={() => router.push('/screen-time')} />
         <ListRow icon="phone" title={t('settings.miui')} subtitle={t('settings.miuiSub')} onPress={openMiui} />
         <ListRow
           icon="arrow-up-right"

@@ -35,19 +35,20 @@ function habitsCsv(): string {
 }
 
 function healthCsv(): string {
-  const rows = db.getAllSync<{ date: string; water: number | null; sleep: number | null; quality: number | null; kcal: number | null; mood: number | null }>(
+  const rows = db.getAllSync<{ date: string; water: number | null; sleep: number | null; quality: number | null; kcal: number | null; mood: number | null; steps: number | null }>(
     `WITH days AS (
-       SELECT date FROM water_logs UNION SELECT date FROM sleep_logs UNION SELECT date FROM food_logs UNION SELECT date FROM mood_logs
+       SELECT date FROM water_logs UNION SELECT date FROM sleep_logs UNION SELECT date FROM food_logs UNION SELECT date FROM mood_logs UNION SELECT date FROM steps_daily
      )
      SELECT d.date,
        (SELECT SUM(ml) FROM water_logs w WHERE w.date = d.date) AS water,
        (SELECT duration_min FROM sleep_logs s WHERE s.date = d.date) AS sleep,
        (SELECT quality FROM sleep_logs s WHERE s.date = d.date) AS quality,
        (SELECT SUM(kcal) FROM food_logs f WHERE f.date = d.date) AS kcal,
-       (SELECT mood FROM mood_logs m WHERE m.date = d.date) AS mood
+       (SELECT mood FROM mood_logs m WHERE m.date = d.date) AS mood,
+       (SELECT steps FROM steps_daily st WHERE st.date = d.date) AS steps
      FROM days d ORDER BY d.date`,
   );
-  return toCsv(['Tarix', 'Su (ml)', 'Yuxu (dəq)', 'Yuxu keyfiyyəti', 'Kalori', 'Əhval (1–5)'], rows.map((r) => [r.date, r.water, r.sleep, r.quality, r.kcal, r.mood]));
+  return toCsv(['Tarix', 'Su (ml)', 'Yuxu (dəq)', 'Yuxu keyfiyyəti', 'Kalori', 'Əhval (1–5)', 'Addım'], rows.map((r) => [r.date, r.water, r.sleep, r.quality, r.kcal, r.mood, r.steps]));
 }
 
 /** CSV faylını yaradır və paylaşma pəncərəsini açır (Gmail, Drive, Telegram...). */

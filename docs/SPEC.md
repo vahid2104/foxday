@@ -278,7 +278,13 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 - [x] Ayarlar, onboarding (4 ekran), əməliyyat redaktəsi, həftəlik/aylıq hesabat
 - [x] "Həftədə N dəfə" tezliyi (seriya həftələrlə sayılır, günlər "buraxılmış" sayılmır)
 - [x] Ayarlarda "Test bildirişi" düyməsi
-- [ ] APK build (EAS)
+- [x] Aylıq abunəliklər: ödəniş günü, 3 gün qabaq və həmin gün xatırlatma, "Ödədim" → avtomatik xərc
+- [x] XP, səviyyələr (Foxy-yə şərf/tac), 12 nişan
+- [x] Kalori (tez əlavə), əhval (1–5), CSV ixracı (pul, vərdişlər, sağlamlıq)
+- [x] Ekran vaxtı (yerli Kotlin modulu `modules/foxday-tracker`): app-lər üzrə vaxt, açılma sayı, həftə qrafiki, app limitləri (80% / 100% bildiriş)
+- [x] Addım sayğacı (TYPE_STEP_COUNTER), km və təxmini kalori (addım + velosiped iş vaxtı)
+- [x] Arxa fon tapşırığı (~15 dəq): addımları yazır, limitləri yoxlayır
+- [ ] APK build (EAS) — ekran vaxtı və addımlar yalnız APK-da işləyir (Expo Go-da "APK-da işləyəcək")
 
 ## 10. Açıq suallar
 
@@ -310,3 +316,6 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 | 2026-10-15 | React Compiler: bazadan oxuyan hook `'use no memo'` ilə işləyir (əks halda ekran yenilənmir) |
 | 2026-10-16 | v1 tamamlandı: vərdişlər, məqsədlər, su, yuxu, bildirişlər, animasiyalar, ayarlar, onboarding, hesabat |
 | 2026-10-16 | Animasiyalar Lottie əvəzinə Reanimated ilə (fayl lazım deyil, Expo Go-da işləyir) |
+| 2026-10-16 | Tam versiya APK-dan əvvəl: abunəliklər, XP/nişanlar, kalori/əhval/CSV, ekran vaxtı, addımlar |
+| 2026-10-16 | Ekran vaxtı və addımlar üçün öz Kotlin modulumuz (Expo Modules API); Health Connect lazım olmadı |
+| 2026-10-16 | Addımlar: sensor telefon yandırılandan bəri sayır → hər oxunuşda fərq yazılır, reboot nəzərə alınır |
