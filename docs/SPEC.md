@@ -219,6 +219,7 @@ bal = 40 × (tamamlanan vərdişlər / bugünkü vərdişlər)
     + 25 × min(yuxu / yuxu hədəfi, 1)
     + 10 × (bu gün nəsə qeyd edilibsə 1, yoxsa 0)
 ```
+Vərdiş yoxdursa vərdiş hissəsi tam (40) sayılır; "keçildi" günləri hesablamaya daxil deyil.
 v2-də ekran vaxtı və addımlar da əlavə olunacaq.
 
 ---
@@ -270,11 +271,13 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 
 - [x] Layihə skeleti, tema, dillər, alt menyu
 - [x] Pul modulu (gəlir, xərc, məzənnə, Pul ekranı, Bu gün qazanc kartı)
-- [ ] Vərdişlər və məqsədlər
-- [ ] Su və yuxu
-- [ ] Ayarlar və onboarding
-- [ ] Təbrik animasiyaları (Lottie)
-- [ ] Əməliyyatı redaktə etmək (hazırda yalnız silmək olur)
+- [x] Vərdişlər (hər gün / seçilmiş günlər, seriya, təqvim, keçmək, arxiv) və məqsədlər (rəqəmli + addımlı)
+- [x] Su və yuxu, Sağlamlıq tabı, günün balı tam real
+- [x] Bildirişlər: su (09–21, 2 saatdan bir), vərdiş saatı, axşam 21:30
+- [x] Foxy animasiyaları: konfetti ilə təbrik, buraxılan vərdiş modalı (Reanimated ilə, Lottie lazım olmadı)
+- [x] Ayarlar, onboarding (4 ekran), əməliyyat redaktəsi, həftəlik/aylıq hesabat
+- [ ] "Həftədə N dəfə" tezliyi (hələlik: hər gün və ya seçilmiş günlər)
+- [ ] APK build (EAS)
 
 ## 10. Açıq suallar
 
@@ -303,3 +306,6 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 | 2026-10-15 | Expo SDK 57 layihəsi quruldu, GitHub: vahid2104/foxday |
 | 2026-10-15 | Baza: Drizzle əvəzinə sadə SQL; pul qəpiklə (tam ədəd) saxlanılır; hər əməliyyat öz məzənnəsi ilə |
 | 2026-10-15 | Pul modulu hazır: gəlir/xərc formaları, NBP məzənnəsi (USD — A, AZN — B cədvəli, keşlə), Pul ekranı |
+| 2026-10-15 | React Compiler: bazadan oxuyan hook `'use no memo'` ilə işləyir (əks halda ekran yenilənmir) |
+| 2026-10-16 | v1 tamamlandı: vərdişlər, məqsədlər, su, yuxu, bildirişlər, animasiyalar, ayarlar, onboarding, hesabat |
+| 2026-10-16 | Animasiyalar Lottie əvəzinə Reanimated ilə (fayl lazım deyil, Expo Go-da işləyir) |

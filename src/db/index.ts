@@ -50,11 +50,82 @@ const MIGRATIONS: string[] = [
     PRIMARY KEY (date, currency)
   );
   `,
+  // v2 — Vərdişlər, məqsədlər, su, yuxu
+  `
+  CREATE TABLE habits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    color TEXT NOT NULL,
+    frequency TEXT NOT NULL DEFAULT 'daily',
+    days TEXT NOT NULL DEFAULT '0,1,2,3,4,5,6',
+    reminder_time TEXT,
+    sort INTEGER NOT NULL DEFAULT 0,
+    archived INTEGER NOT NULL DEFAULT 0,
+    start_date TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE habit_logs (
+    habit_id INTEGER NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+    date TEXT NOT NULL,
+    status TEXT NOT NULL,
+    PRIMARY KEY (habit_id, date)
+  );
+  CREATE INDEX idx_habit_logs_date ON habit_logs(date);
+
+  CREATE TABLE goals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    type TEXT NOT NULL,
+    target REAL NOT NULL DEFAULT 0,
+    unit TEXT,
+    deadline TEXT,
+    completed_at TEXT,
+    archived INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE goal_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    goal_id INTEGER NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
+    date TEXT NOT NULL,
+    amount REAL NOT NULL,
+    note TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE goal_steps (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    goal_id INTEGER NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    done INTEGER NOT NULL DEFAULT 0,
+    sort INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE water_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    ml INTEGER NOT NULL
+  );
+  CREATE INDEX idx_water_logs_date ON water_logs(date);
+
+  CREATE TABLE sleep_logs (
+    date TEXT PRIMARY KEY,
+    bed_time TEXT NOT NULL,
+    wake_time TEXT NOT NULL,
+    duration_min INTEGER NOT NULL,
+    quality INTEGER,
+    note TEXT
+  );
+  `,
 ];
 
 /** Bazanı ən son versiyaya gətirir. App açılanda bir dəfə çağırılır. */
 export function migrate() {
   db.execSync('PRAGMA journal_mode = WAL');
+  db.execSync('PRAGMA foreign_keys = ON');
   const row = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
   const current = row?.user_version ?? 0;
   for (let v = current; v < MIGRATIONS.length; v++) {

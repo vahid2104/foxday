@@ -15,6 +15,14 @@ type SettingsState = {
   sleepGoalMin: number;
   monthlyIncomeGoal: number;
   onboardingDone: boolean;
+  glassMl: number;
+  notifWater: boolean;
+  notifHabits: boolean;
+  notifEvening: boolean;
+  /** Təbrik animasiyasının sonuncu dəfə göstərildiyi gün (gündə bir dəfə). */
+  lastCelebrated: string;
+  /** "Buraxılan vərdiş" modalının sonuncu dəfə göstərildiyi gün. */
+  lastMissedShown: string;
   set: (patch: Partial<Omit<SettingsState, 'set'>>) => void;
 };
 
@@ -30,6 +38,12 @@ export const useSettings = create<SettingsState>()(
       sleepGoalMin: 8 * 60,
       monthlyIncomeGoal: 5000,
       onboardingDone: false,
+      glassMl: 250,
+      notifWater: true,
+      notifHabits: true,
+      notifEvening: true,
+      lastCelebrated: '',
+      lastMissedShown: '',
       set: (patch) => set(patch),
     }),
     {

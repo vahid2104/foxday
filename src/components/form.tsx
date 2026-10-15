@@ -260,28 +260,51 @@ export function TextField({
 }
 
 /** Tarix seçimi — Android-in öz təqvim pəncərəsi. */
-export function DateField({ value, onChange }: { value: string; onChange: (iso: string) => void }) {
+export function DateField({
+  value,
+  onChange,
+  future,
+  placeholder,
+  onClear,
+}: {
+  value: string | null;
+  onChange: (iso: string) => void;
+  /** true: gələcək tarixlər (son tarix üçün); default: yalnız bu gün və keçmiş */
+  future?: boolean;
+  placeholder?: string;
+  onClear?: () => void;
+}) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const language = useSettings((s) => s.language);
   const open = () => {
     if (Platform.OS !== 'android') return;
     DateTimePickerAndroid.open({
-      value: fromISODate(value),
+      value: value ? fromISODate(value) : new Date(),
       mode: 'date',
-      maximumDate: new Date(),
+      ...(future ? { minimumDate: new Date() } : { maximumDate: new Date() }),
       onChange: (event, date) => {
         if (event.type === 'set' && date) onChange(toISODate(date));
       },
     });
   };
-  const label = formatRelativeDate(value, language, { today: t('form.today'), yesterday: t('form.yesterday') });
+  let label = placeholder ?? t('form.pick');
+  if (value) {
+    const rel = formatRelativeDate(value, language, { today: t('form.today'), yesterday: t('form.yesterday') });
+    const short = formatShortDate(value, language);
+    label = rel === short ? `${short} ${value.slice(0, 4)}` : `${rel}, ${short}`;
+  }
   return (
     <FieldBox onPress={open}>
       <Icon name="calendar" color={colors.textSecondary} size={18} />
-      <Text variant="bodyStrong" style={{ flex: 1 }}>
-        {label === formatShortDate(value, language) ? label : `${label}, ${formatShortDate(value, language)}`}
+      <Text variant="bodyStrong" color={value ? 'textPrimary' : 'textSecondary'} style={{ flex: 1 }}>
+        {label}
       </Text>
+      {value && onClear ? (
+        <Pressable onPress={onClear} hitSlop={10} accessibilityLabel={t('common.delete')}>
+          <Icon name="x" color={colors.textSecondary} size={18} />
+        </Pressable>
+      ) : null}
     </FieldBox>
   );
 }

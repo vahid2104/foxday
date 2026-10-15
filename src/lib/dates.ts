@@ -46,3 +46,8 @@ export function hhmmToDate(hhmm: string, base = new Date()): Date {
   d.setHours(h, m, 0, 0);
   return d;
 }
+
+/** İki tarix arasındakı gün fərqi (b − a). */
+export function daysBetween(a: string, b: string): number {
+  return Math.round((fromISODate(b).getTime() - fromISODate(a).getTime()) / 86400000);
+}

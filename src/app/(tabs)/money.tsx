@@ -271,7 +271,10 @@ function TransactionRow({ tx }: { tx: Transaction }) {
   };
 
   return (
-    <Pressable onLongPress={confirmDelete} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+    <Pressable
+      onPress={() => router.push({ pathname: income ? '/income/new' : '/expense/new', params: { id: String(tx.id) } })}
+      onLongPress={confirmDelete}
+      style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
       {income ? (
         <IconBox icon="bike" color="textBrand" bg="bgBrandSubtle" />
       ) : (

@@ -1,11 +1,14 @@
 import * as Haptics from 'expo-haptics';
 import { router, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { IconName } from '@/components/Icon';
 import { IconBox, Text } from '@/components/ui';
+import { addWater } from '@/db/health';
+import { today } from '@/lib/dates';
+import { useSettings } from '@/store/settings';
 import { spacing, useTheme, type ColorTokens } from '@/theme';
 
 type Option = {
@@ -20,9 +23,9 @@ const OPTIONS: Option[] = [
   { key: 'income', icon: 'bike', color: 'textBrand', bg: 'bgBrandSubtle', href: '/income/new' },
   { key: 'expense', icon: 'arrow-down-left', color: 'accentDanger', bg: 'bgDangerSubtle', href: '/expense/new' },
   { key: 'water', icon: 'droplet', color: 'accentWater', bg: 'bgWaterSubtle' },
-  { key: 'habit', icon: 'check', color: 'accentSuccess', bg: 'bgSuccessSubtle' },
-  { key: 'sleep', icon: 'moon', color: 'accentSleep', bg: 'bgSleepSubtle' },
-  { key: 'goal', icon: 'target', color: 'textBrand', bg: 'bgBrandSubtle' },
+  { key: 'habit', icon: 'check', color: 'accentSuccess', bg: 'bgSuccessSubtle', href: '/habit/form' },
+  { key: 'sleep', icon: 'moon', color: 'accentSleep', bg: 'bgSleepSubtle', href: '/sleep/new' },
+  { key: 'goal', icon: 'target', color: 'textBrand', bg: 'bgBrandSubtle', href: '/goal/form' },
 ];
 
 /** Sürətli əlavə menyusu (Figma: "06 · Sürətli əlavə"). */
@@ -35,8 +38,11 @@ export default function AddSheet() {
     Haptics.selectionAsync();
     if (o.href) {
       router.replace(o.href);
-    } else {
-      Alert.alert(t('add.soonTitle'), t('add.soonText'));
+    } else if (o.key === 'water') {
+      // Su: bir stəkan əlavə et və bağla
+      addWater(today(), useSettings.getState().glassMl);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
     }
   };
 
@@ -55,10 +61,10 @@ export default function AddSheet() {
               onPress={() => choose(o)}
               style={({ pressed }) => [
                 styles.option,
-                { backgroundColor: colors.bgSurfaceAlt, opacity: pressed ? 0.7 : o.href ? 1 : 0.55 },
+                { backgroundColor: colors.bgSurfaceAlt, opacity: pressed ? 0.7 : 1 },
               ]}>
               <IconBox icon={o.icon} color={o.color} bg={o.bg} size={48} rounded={16} iconSize={22} />
-              <Text variant="bodyStrong">{t(`add.${o.key}`)}</Text>
+              <Text variant="bodyStrong">{o.key === 'water' ? `+${useSettings.getState().glassMl} ml` : t(`add.${o.key}`)}</Text>
             </Pressable>
           ))}
         </View>

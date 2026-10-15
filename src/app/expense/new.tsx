@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
@@ -15,18 +15,20 @@ import {
   useRate,
 } from '@/components/form';
 import { CATEGORY_ICONS } from '@/components/money-meta';
-import { addExpense, EXPENSE_CATEGORIES, type ExpenseCategory } from '@/db/money';
+import { addExpense, EXPENSE_CATEGORIES, getExpense, updateExpense, type ExpenseCategory } from '@/db/money';
 import { today } from '@/lib/dates';
-import { parseAmount, sanitizeAmountInput, type Currency } from '@/lib/money';
+import { formatAmount, parseAmount, sanitizeAmountInput, type Currency } from '@/lib/money';
 
 /** Figma: "10 · Xərc əlavə et" */
 export default function NewExpenseScreen() {
   const { t } = useTranslation();
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<Currency>('PLN');
-  const [category, setCategory] = useState<ExpenseCategory>('bike');
-  const [date, setDate] = useState(today());
-  const [note, setNote] = useState('');
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const ex = id ? getExpense(Number(id)) : null;
+  const [amount, setAmount] = useState(ex ? formatAmount(ex.amountMinor).replace(/\s/g, '') : '');
+  const [currency, setCurrency] = useState<Currency>(ex?.currency ?? 'PLN');
+  const [category, setCategory] = useState<ExpenseCategory>(ex?.category ?? 'bike');
+  const [date, setDate] = useState(ex?.date ?? today());
+  const [note, setNote] = useState(ex?.note ?? '');
   const [error, setError] = useState<string | null>(null);
   const rate = useRate(currency, date);
 
@@ -42,13 +44,15 @@ export default function NewExpenseScreen() {
       Alert.alert('⚠️', t('form.rateError'));
       return;
     }
-    addExpense({ date, amountMinor, currency, rateToPln: rateValue, category, note: note.trim() || null });
+    const input = { date, amountMinor, currency, rateToPln: rateValue, category, note: note.trim() || null };
+    if (ex) updateExpense(ex.id, input);
+    else addExpense(input);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     router.back();
   };
 
   return (
-    <FormScreen title={t('form.expenseTitle')} saveLabel={t('form.save')} onSave={save}>
+    <FormScreen title={ex ? t('common.edit') : t('form.expenseTitle')} saveLabel={t('form.save')} onSave={save}>
       <AmountInput
         value={amount}
         onChange={(v) => {

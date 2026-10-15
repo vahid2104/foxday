@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, View } from 'react-native';
@@ -16,7 +16,7 @@ import {
   TimeField,
   useRate,
 } from '@/components/form';
-import { addWorkSession, PLATFORMS, type Platform } from '@/db/money';
+import { addWorkSession, getWorkSession, PLATFORMS, updateWorkSession, type Platform } from '@/db/money';
 import { today } from '@/lib/dates';
 import { splitMinutes } from '@/lib/format-date';
 import {
@@ -32,22 +32,25 @@ import { spacing } from '@/theme';
 /** Figma: "09 · Gəlir əlavə et" */
 export default function NewIncomeScreen() {
   const { t } = useTranslation();
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<Currency>('PLN');
-  const [platform, setPlatform] = useState<Platform>('uber');
-  const [date, setDate] = useState(today());
-  const [start, setStart] = useState<string | null>(null);
-  const [end, setEnd] = useState<string | null>(null);
-  const [orders, setOrders] = useState('');
-  const [tip, setTip] = useState('');
-  const [km, setKm] = useState('');
-  const [note, setNote] = useState('');
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const ex = id ? getWorkSession(Number(id)) : null;
+  const minorToInput = (m: number) => (m ? formatAmount(m).replace(/\s/g, '') : '');
+  const [amount, setAmount] = useState(ex ? minorToInput(ex.amountMinor) : '');
+  const [currency, setCurrency] = useState<Currency>(ex?.currency ?? 'PLN');
+  const [platform, setPlatform] = useState<Platform>(ex?.platform ?? 'uber');
+  const [date, setDate] = useState(ex?.date ?? today());
+  const [start, setStart] = useState<string | null>(ex?.startTime ?? null);
+  const [end, setEnd] = useState<string | null>(ex?.endTime ?? null);
+  const [orders, setOrders] = useState(ex?.orders != null ? String(ex.orders) : '');
+  const [tip, setTip] = useState(ex ? minorToInput(ex.tipMinor) : '');
+  const [km, setKm] = useState(ex?.km != null ? String(ex.km).replace('.', ',') : '');
+  const [note, setNote] = useState(ex?.note ?? '');
   const [error, setError] = useState<string | null>(null);
   const rate = useRate(currency, date);
 
   const amountMinor = parseAmount(amount);
   const tipMinor = parseAmount(tip) ?? 0;
-  const minutes = start && end ? durationMinutes(start, end) : 0;
+  const minutes = start && end ? durationMinutes(start, end) : (ex && !ex.startTime ? ex.durationMin : 0);
   const ordersNum = orders ? parseInt(orders, 10) : null;
   const rateValue = rate.status === 'ok' ? rate.result.rate : currency === 'PLN' ? 1 : null;
   const totalPln = amountMinor != null && rateValue != null ? Math.round((amountMinor + tipMinor) * rateValue) : null;
@@ -62,7 +65,7 @@ export default function NewIncomeScreen() {
       Alert.alert('⚠️', t('form.rateError'));
       return;
     }
-    addWorkSession({
+    const input = {
       date,
       platform,
       amountMinor,
@@ -75,13 +78,15 @@ export default function NewIncomeScreen() {
       orders: ordersNum,
       km: km ? parseFloat(km.replace(',', '.')) : null,
       note: note.trim() || null,
-    });
+    };
+    if (ex) updateWorkSession(ex.id, input);
+    else addWorkSession(input);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     router.back();
   };
 
   return (
-    <FormScreen title={t('form.incomeTitle')} saveLabel={t('form.save')} onSave={save}>
+    <FormScreen title={ex ? t('common.edit') : t('form.incomeTitle')} saveLabel={t('form.save')} onSave={save}>
       <AmountInput
         value={amount}
         onChange={(v) => {

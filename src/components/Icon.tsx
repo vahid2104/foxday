@@ -43,6 +43,8 @@ const ICONS = {
     P('M3 7v5c0 1.7 2.7 3 6 3s6-1.3 6-3V7'),
     P('M9 15v2c0 1.7 2.7 3 6 3s6-1.3 6-3v-5c0-1.7-2.7-3-6-3'),
   ],
+  sliders: [P('M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1'), C(15, 6, 2), C(9, 12, 2), C(17, 18, 2)],
+  trash: [P('M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3')],
   refresh: [P('M20 11a8 8 0 0 0-14.5-4.5L3 9M3 4v5h5M4 13a8 8 0 0 0 14.5 4.5L21 15M21 20v-5h-5')],
 } satisfies Record<string, Shape[]>;
 

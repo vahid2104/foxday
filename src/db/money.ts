@@ -159,3 +159,56 @@ export function getTransactions(from: string, to: string, limit = 50): Transacti
     note: r.note,
   }));
 }
+
+// ---------- Redaktə ----------
+
+export function getWorkSession(id: number): (WorkSessionInput & { id: number }) | null {
+  const r = db.getFirstSync<{
+    id: number; date: string; platform: Platform; amount_minor: number; tip_minor: number; currency: Currency;
+    rate_to_pln: number; start_time: string | null; end_time: string | null; duration_min: number;
+    orders: number | null; km: number | null; note: string | null;
+  }>('SELECT * FROM work_sessions WHERE id = ?', [id]);
+  if (!r) return null;
+  return {
+    id: r.id, date: r.date, platform: r.platform, amountMinor: r.amount_minor, tipMinor: r.tip_minor,
+    currency: r.currency, rateToPln: r.rate_to_pln, startTime: r.start_time, endTime: r.end_time,
+    durationMin: r.duration_min, orders: r.orders, km: r.km, note: r.note,
+  };
+}
+
+export function updateWorkSession(id: number, s: WorkSessionInput) {
+  const plnMinor = Math.round((s.amountMinor + s.tipMinor) * s.rateToPln);
+  db.runSync(
+    `UPDATE work_sessions SET date = ?, platform = ?, amount_minor = ?, tip_minor = ?, currency = ?, rate_to_pln = ?,
+       amount_pln_minor = ?, start_time = ?, end_time = ?, duration_min = ?, orders = ?, km = ?, note = ? WHERE id = ?`,
+    [s.date, s.platform, s.amountMinor, s.tipMinor, s.currency, s.rateToPln, plnMinor,
+     s.startTime, s.endTime, s.durationMin, s.orders, s.km, s.note, id],
+  );
+  notifyDbChanged();
+}
+
+export function getExpense(id: number): (ExpenseInput & { id: number }) | null {
+  const r = db.getFirstSync<{
+    id: number; date: string; amount_minor: number; currency: Currency; rate_to_pln: number;
+    category: ExpenseCategory; note: string | null;
+  }>('SELECT * FROM expenses WHERE id = ?', [id]);
+  if (!r) return null;
+  return { id: r.id, date: r.date, amountMinor: r.amount_minor, currency: r.currency, rateToPln: r.rate_to_pln, category: r.category, note: r.note };
+}
+
+export function updateExpense(id: number, e: ExpenseInput) {
+  const plnMinor = Math.round(e.amountMinor * e.rateToPln);
+  db.runSync(
+    `UPDATE expenses SET date = ?, amount_minor = ?, currency = ?, rate_to_pln = ?, amount_pln_minor = ?, category = ?, note = ? WHERE id = ?`,
+    [e.date, e.amountMinor, e.currency, e.rateToPln, plnMinor, e.category, e.note, id],
+  );
+  notifyDbChanged();
+}
+
+/** Kateqoriyalar üzrə xərclər (hesabat üçün). */
+export function getExpenseByCategory(from: string, to: string) {
+  return db.getAllSync<{ category: ExpenseCategory; pln: number }>(
+    `SELECT category, SUM(amount_pln_minor) AS pln FROM expenses WHERE date BETWEEN ? AND ? GROUP BY category ORDER BY pln DESC`,
+    [from, to],
+  );
+}
