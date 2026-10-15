@@ -53,6 +53,27 @@ export async function requestPermission(): Promise<boolean> {
   return status === 'granted';
 }
 
+/**
+ * 5 saniyə sonra test bildirişi göndərir (Ayarlar → Test bildirişi).
+ * 'unavailable' — bildiriş modulu bu mühitdə yoxdur (Expo Go), 'denied' — icazə verilməyib.
+ */
+export async function sendTestNotification(): Promise<'sent' | 'unavailable' | 'denied'> {
+  const Notifications = getNotificationsApi();
+  if (!Notifications) return 'unavailable';
+  try {
+    if (!(await hasPermission()) && !(await requestPermission())) return 'denied';
+    await ensureChannel(Notifications);
+    await Notifications.scheduleNotificationAsync({
+      content: { title: i18n.t('notifications.testTitle'), body: i18n.t('notifications.testBody') },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5, channelId: CHANNEL },
+    });
+    return 'sent';
+  } catch (e) {
+    console.warn('sendTestNotification', e);
+    return 'unavailable';
+  }
+}
+
 /** Expo-nun həftə günü: 1 = bazar ... 7 = şənbə. Bizim: 0 = B.e ... 6 = bazar. */
 const toExpoWeekday = (d: number) => (d === 6 ? 1 : d + 2);
 
@@ -101,7 +122,7 @@ async function doSync() {
       if (!h.reminderTime) continue;
       const [hour, minute] = h.reminderTime.split(':').map(Number);
       const content = { title: h.name, body: t('notifications.habitBody') };
-      if (h.frequency === 'daily') {
+      if (h.frequency !== 'days') {
         await Notifications.scheduleNotificationAsync({ content, trigger: daily(hour, minute) });
       } else {
         for (const d of h.days) {

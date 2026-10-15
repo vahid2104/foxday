@@ -95,6 +95,8 @@ export default {
     soonText: 'Bu bölmə növbəti addımlarda hazır olacaq.',
   },
   habits: {
+    weekCount: 'Bu həftə {{done}} / {{target}}',
+    streakWeeks: '🔥 {{count}} həftə ardıcıl',
     segHabits: 'Vərdişlər',
     segGoals: 'Məqsədlər',
     weekProgress: 'Bu həftə · {{pct}}%',
@@ -115,6 +117,10 @@ export default {
     details: 'Detallar',
   },
   habitForm: {
+    weekly: 'Həftədə N dəfə',
+    timesPerWeek: 'Həftədə neçə dəfə?',
+    times: '{{count}} dəfə',
+    weeklyHint: 'İstənilən günlərdə et — hədəf həftə üzrədir',
     newTitle: 'Yeni vərdiş',
     editTitle: 'Vərdişi redaktə et',
     name: 'Ad',
@@ -132,6 +138,7 @@ export default {
     daysRequired: 'Ən azı bir gün seç',
   },
   habitDetail: {
+    weeks: '{{count}} həftə',
     currentStreak: 'Cari seriya',
     longest: 'Ən uzun seriya',
     thisMonth: 'Bu ay',
@@ -241,6 +248,11 @@ export default {
     cta: 'Bu gün yenidən başla',
   },
   settings: {
+    testNotif: 'Test bildirişi',
+    testNotifSub: '5 saniyə sonra gəlir',
+    testSent: 'Göndərildi! 5 saniyə gözlə — app-i bağlaya da bilərsən.',
+    testUnavailable: 'Bildiriş modulu bu mühitdə yoxdur (Expo Go). APK-da işləyəcək.',
+    testDenied: 'Bildirişlərə icazə verilməyib. Telefonun ayarlarından aç.',
     title: 'Ayarlar',
     general: 'ÜMUMİ',
     name: 'Ad',
@@ -314,6 +326,8 @@ export default {
     noData: 'Bu dövr üçün məlumat yoxdur',
   },
   notifications: {
+    testTitle: 'Foxy burada! 🦊',
+    testBody: 'Bildirişlər işləyir. Əla!',
     channel: 'Xatırlatmalar',
     waterTitle: 'Su vaxtıdır 💧',
     waterBody: 'Foxy deyir: bir stəkan su iç!',

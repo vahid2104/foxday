@@ -276,7 +276,8 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 - [x] Bildirişlər: su (09–21, 2 saatdan bir), vərdiş saatı, axşam 21:30
 - [x] Foxy animasiyaları: konfetti ilə təbrik, buraxılan vərdiş modalı (Reanimated ilə, Lottie lazım olmadı)
 - [x] Ayarlar, onboarding (4 ekran), əməliyyat redaktəsi, həftəlik/aylıq hesabat
-- [ ] "Həftədə N dəfə" tezliyi (hələlik: hər gün və ya seçilmiş günlər)
+- [x] "Həftədə N dəfə" tezliyi (seriya həftələrlə sayılır, günlər "buraxılmış" sayılmır)
+- [x] Ayarlarda "Test bildirişi" düyməsi
 - [ ] APK build (EAS)
 
 ## 10. Açıq suallar

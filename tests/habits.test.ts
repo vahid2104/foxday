@@ -90,3 +90,49 @@ test('dayScore', () => {
     40,
   );
 });
+
+// ---------- Həftədə N dəfə ----------
+// Başlanğıc: 2026-09-28 (B.e). Hədəf: həftədə 3 dəfə. Bu gün: 2026-10-15 (C.a)
+const weekly: HabitSchedule = { frequency: 'weekly', days: [], startDate: '2026-09-28', timesPerWeek: 3 };
+
+test('weekly: bu gün göstərilir, hədəf dolanda gizlənir', async () => {
+  const { isDueToday, doneInWeek } = await import('../src/lib/habits');
+  const l = logs([['2026-10-12', 'done'], ['2026-10-14', 'done']]);
+  assert.equal(doneInWeek(l, TODAY), 2);
+  assert.equal(isDueToday(weekly, TODAY, l), true);
+  const full = { ...l, '2026-10-13': 'done' as const };
+  assert.equal(isDueToday(weekly, TODAY, full), false);
+  // bu gün edilibsə: hədəf bu gündən əvvəl dolmamışdı → siyahıda qalır (işarəli)
+  assert.equal(isDueToday(weekly, TODAY, { ...l, [TODAY]: 'done' }), true);
+});
+
+test('weekly: günlər "buraxılmış" sayılmır', () => {
+  assert.equal(dayState(weekly, '2026-10-13', {}, TODAY), 'off');
+  assert.equal(dayState(weekly, TODAY, {}, TODAY), 'pending');
+});
+
+test('weekly: seriya həftələrlə', () => {
+  const l = logs([
+    // 28 sen həftəsi: 3 ✓
+    ['2026-09-28', 'done'], ['2026-09-30', 'done'], ['2026-10-02', 'done'],
+    // 5 okt həftəsi: 3 ✓
+    ['2026-10-05', 'done'], ['2026-10-06', 'done'], ['2026-10-09', 'done'],
+    // 12 okt həftəsi (cari): 1 — hələ dolmayıb, seriya qırılmır
+    ['2026-10-12', 'done'],
+  ]);
+  assert.equal(currentStreak(weekly, l, TODAY), 2);
+  assert.equal(longestStreak(weekly, l, TODAY), 2);
+  const l2 = { ...l, '2026-10-13': 'done' as const, '2026-10-14': 'done' as const };
+  assert.equal(currentStreak(weekly, l2, TODAY), 3);
+  // ortadakı həftə dolmayıbsa seriya qırılır
+  const l3 = { ...l2 };
+  delete l3['2026-10-09'];
+  assert.equal(currentStreak(weekly, l3, TODAY), 1);
+  assert.equal(longestStreak(weekly, l3, TODAY), 1);
+});
+
+test('weekly: tamamlanma faizi', () => {
+  const l = logs([['2026-10-05', 'done'], ['2026-10-06', 'done'], ['2026-10-12', 'done']]);
+  // 5 okt həftəsi: 2/3, cari həftə: 1/1 (yalnız edilən sayılır) → 3/4
+  assert.equal(completionRate(weekly, l, '2026-10-05', '2026-10-18', TODAY), 3 / 4);
+});

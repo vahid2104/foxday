@@ -10,7 +10,7 @@ import { TextField } from '@/components/form';
 import { formatHours, formatLiters, formatPln } from '@/components/goal-format';
 import { Foxy } from '@/components/Foxy';
 import { Card, Row, Text } from '@/components/ui';
-import { hasPermission, requestPermission } from '@/services/notifications';
+import { hasPermission, requestPermission, sendTestNotification } from '@/services/notifications';
 import { useSettings, type Language, type ThemePreference } from '@/store/settings';
 import { spacing } from '@/theme';
 
@@ -156,6 +156,21 @@ export default function SettingsScreen() {
           title={t('settings.notifEvening')}
           subtitle={t('settings.notifEveningSub')}
           right={<Toggle value={s.notifEvening} onChange={(notifEvening) => s.set({ notifEvening })} />}
+        />
+        <ListRow
+          icon="bell"
+          iconColor="accentSuccess"
+          iconBg="bgSuccessSubtle"
+          title={t('settings.testNotif')}
+          subtitle={t('settings.testNotifSub')}
+          onPress={async () => {
+            const result = await sendTestNotification();
+            if (result === 'sent') setPermission(true);
+            Alert.alert(
+              t('settings.testNotif'),
+              result === 'sent' ? t('settings.testSent') : result === 'denied' ? t('settings.testDenied') : t('settings.testUnavailable'),
+            );
+          }}
         />
       </Card>
 

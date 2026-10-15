@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, View } from 'react-native';
 
-import { Segment, Toggle } from '@/components/controls';
+import { Segment, Stepper, Toggle } from '@/components/controls';
 import { Field, FormScreen, TextField, TimeField } from '@/components/form';
 import { HABIT_COLOR_SOLID, HABIT_COLOR_TOKENS } from '@/components/habit-meta';
 import { Icon } from '@/components/Icon';
@@ -28,6 +28,7 @@ export default function HabitFormScreen() {
   const [color, setColor] = useState<HabitColor>(existing?.color ?? 'brand');
   const [frequency, setFrequency] = useState<HabitFrequency>(existing?.frequency ?? 'daily');
   const [days, setDays] = useState<number[]>(existing?.days.length ? existing.days : [0, 1, 2, 3, 4, 5, 6]);
+  const [timesPerWeek, setTimesPerWeek] = useState(existing?.timesPerWeek ?? 3);
   const [reminderOn, setReminderOn] = useState(!!existing?.reminderTime);
   const [reminder, setReminder] = useState<string | null>(existing?.reminderTime ?? '08:00');
 
@@ -41,7 +42,8 @@ export default function HabitFormScreen() {
       icon,
       color,
       frequency,
-      days: frequency === 'daily' ? [0, 1, 2, 3, 4, 5, 6] : days,
+      days: frequency === 'days' ? days : [0, 1, 2, 3, 4, 5, 6],
+      timesPerWeek,
       reminderTime: reminderOn ? reminder : null,
     };
     if (existing) updateHabit(existing.id, input);
@@ -117,9 +119,29 @@ export default function HabitFormScreen() {
           options={[
             { value: 'daily', label: t('habitForm.daily') },
             { value: 'days', label: t('habitForm.selectedDays') },
+            { value: 'weekly', label: t('habitForm.weekly') },
           ]}
         />
       </Field>
+
+      {frequency === 'weekly' ? (
+        <Card style={{ gap: 6 }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Text variant="bodyStrong">{t('habitForm.timesPerWeek')}</Text>
+            <Stepper
+              value={timesPerWeek}
+              onChange={setTimesPerWeek}
+              step={1}
+              min={1}
+              max={6}
+              format={(v) => t('habitForm.times', { count: v })}
+            />
+          </Row>
+          <Text variant="caption" color="textSecondary">
+            {t('habitForm.weeklyHint')}
+          </Text>
+        </Card>
+      ) : null}
 
       {frequency === 'days' ? (
         <Row style={{ justifyContent: 'space-between' }}>

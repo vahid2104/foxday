@@ -38,11 +38,13 @@ export function HabitRow({ habit }: { habit: HabitWithToday }) {
     ]);
   };
 
+  const weekly = habit.frequency === 'weekly';
+  const streakText = habit.streak > 0 ? t(weekly ? 'habits.streakWeeks' : 'habits.streakDays', { count: habit.streak }) : null;
   const subtitle = skipped
     ? t('habits.skipped')
-    : habit.streak > 0
-      ? t('habits.streakDays', { count: habit.streak })
-      : t('habits.startToday');
+    : weekly
+      ? [t('habits.weekCount', { done: habit.weekDone, target: habit.timesPerWeek }), streakText].filter(Boolean).join(' · ')
+      : (streakText ?? t('habits.startToday'));
 
   return (
     <Pressable onPress={toggle} onLongPress={actions} delayLongPress={350}>

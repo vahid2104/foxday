@@ -97,6 +97,8 @@ const ru: typeof az = {
     soonText: 'Этот раздел будет готов на следующих шагах.',
   },
   habits: {
+    weekCount: 'На этой неделе {{done}} / {{target}}',
+    streakWeeks: '🔥 {{count}} нед. подряд',
     segHabits: 'Привычки',
     segGoals: 'Цели',
     weekProgress: 'Эта неделя · {{pct}}%',
@@ -117,6 +119,10 @@ const ru: typeof az = {
     details: 'Подробнее',
   },
   habitForm: {
+    weekly: 'N раз в неделю',
+    timesPerWeek: 'Сколько раз в неделю?',
+    times: '{{count}} раз',
+    weeklyHint: 'В любые дни — цель считается за неделю',
     newTitle: 'Новая привычка',
     editTitle: 'Изменить привычку',
     name: 'Название',
@@ -134,6 +140,7 @@ const ru: typeof az = {
     daysRequired: 'Выбери хотя бы один день',
   },
   habitDetail: {
+    weeks: '{{count}} нед.',
     currentStreak: 'Текущая серия',
     longest: 'Самая длинная серия',
     thisMonth: 'Этот месяц',
@@ -243,6 +250,11 @@ const ru: typeof az = {
     cta: 'Начать заново сегодня',
   },
   settings: {
+    testNotif: 'Тестовое уведомление',
+    testNotifSub: 'Придёт через 5 секунд',
+    testSent: 'Отправлено! Подожди 5 секунд — можно и закрыть приложение.',
+    testUnavailable: 'Уведомления здесь недоступны (Expo Go). В APK они будут работать.',
+    testDenied: 'Уведомления не разрешены. Включи их в настройках телефона.',
     title: 'Настройки',
     general: 'ОБЩИЕ',
     name: 'Имя',
@@ -316,6 +328,8 @@ const ru: typeof az = {
     noData: 'Нет данных за этот период',
   },
   notifications: {
+    testTitle: 'Фокси здесь! 🦊',
+    testBody: 'Уведомления работают. Отлично!',
     channel: 'Напоминания',
     waterTitle: 'Время пить воду 💧',
     waterBody: 'Фокси говорит: выпей стакан воды!',

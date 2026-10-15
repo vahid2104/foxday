@@ -14,7 +14,7 @@ import { archiveHabit, deleteHabit, getHabit, getHabitLogs, setHabitLog } from '
 import { useDbQuery } from '@/db/useDbQuery';
 import { monthRange, toISODate, today } from '@/lib/dates';
 import { formatMonthYear, WEEKDAYS_SHORT } from '@/lib/format-date';
-import { completionRate, currentStreak, dayState, longestStreak, type DayState } from '@/lib/habits';
+import { completionRate, currentStreak, dayState, longestStreak, streakUnit, type DayState } from '@/lib/habits';
 import { syncReminders } from '@/services/notifications';
 import { useSettings } from '@/store/settings';
 import { spacing, useTheme } from '@/theme';
@@ -40,6 +40,7 @@ export default function HabitDetailScreen() {
   const rate = completionRate(habit, logs, from, to, todayIso);
   const totalDone = Object.values(logs).filter((s) => s === 'done').length;
   const tokens = HABIT_COLOR_TOKENS[habit.color];
+  const unitKey = streakUnit(habit) === 'weeks' ? 'habitDetail.weeks' : 'habitDetail.days';
   const isCurrentMonth = month.y === now.getFullYear() && month.m === now.getMonth();
 
   // Ay təqvimi: həftələr B.e-dən başlayır
@@ -89,17 +90,18 @@ export default function HabitDetailScreen() {
         <View style={{ flex: 1, gap: 2 }}>
           <Row style={{ gap: 6 }}>
             <Icon name="flame" color={colors.textBrand} size={22} />
-            <Text variant="h1">{t('habitDetail.days', { count: streak })}</Text>
+            <Text variant="h1">{t(unitKey, { count: streak })}</Text>
           </Row>
           <Text variant="caption" color="textSecondary">
             {t('habitDetail.currentStreak')}
+            {habit.frequency === 'weekly' ? ` · ${t('habitForm.times', { count: habit.timesPerWeek })} / ${t('reports.week').toLowerCase()}` : ''}
             {habit.reminderTime ? ` · ${habit.reminderTime}` : ''}
           </Text>
         </View>
       </Card>
 
       <Row style={{ gap: 10, alignItems: 'stretch' }}>
-        <Stat label={t('habitDetail.longest')} value={t('habitDetail.days', { count: best })} />
+        <Stat label={t('habitDetail.longest')} value={t(unitKey, { count: best })} />
         <Stat
           label={isCurrentMonth ? t('habitDetail.thisMonth') : formatMonthYear(month.y, month.m, language)}
           value={rate == null ? '—' : `${Math.round(rate * 100)}%`}

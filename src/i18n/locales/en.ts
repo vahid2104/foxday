@@ -97,6 +97,8 @@ const en: typeof az = {
     soonText: 'This section will be ready in the next steps.',
   },
   habits: {
+    weekCount: 'This week {{done}} / {{target}}',
+    streakWeeks: '🔥 {{count}} weeks in a row',
     segHabits: 'Habits',
     segGoals: 'Goals',
     weekProgress: 'This week · {{pct}}%',
@@ -117,6 +119,10 @@ const en: typeof az = {
     details: 'Details',
   },
   habitForm: {
+    weekly: 'N times a week',
+    timesPerWeek: 'How many times a week?',
+    times: '{{count}} times',
+    weeklyHint: 'Do it on any days — the goal is per week',
     newTitle: 'New habit',
     editTitle: 'Edit habit',
     name: 'Name',
@@ -134,6 +140,7 @@ const en: typeof az = {
     daysRequired: 'Pick at least one day',
   },
   habitDetail: {
+    weeks: '{{count}} weeks',
     currentStreak: 'Current streak',
     longest: 'Longest streak',
     thisMonth: 'This month',
@@ -243,6 +250,11 @@ const en: typeof az = {
     cta: 'Start again today',
   },
   settings: {
+    testNotif: 'Test notification',
+    testNotifSub: 'Arrives in 5 seconds',
+    testSent: 'Sent! Wait 5 seconds — you can close the app too.',
+    testUnavailable: 'Notifications are not available here (Expo Go). They will work in the APK.',
+    testDenied: 'Notifications are not allowed. Turn them on in phone settings.',
     title: 'Settings',
     general: 'GENERAL',
     name: 'Name',
@@ -316,6 +328,8 @@ const en: typeof az = {
     noData: 'No data for this period',
   },
   notifications: {
+    testTitle: 'Foxy is here! 🦊',
+    testBody: 'Notifications work. Great!',
     channel: 'Reminders',
     waterTitle: 'Water time 💧',
     waterBody: 'Foxy says: have a glass of water!',

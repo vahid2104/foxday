@@ -14,7 +14,7 @@ test('baza: vərdişlər, məqsədlər, su, yuxu, pul', () => {
   const { migrate, db } = require('@/db');
   migrate(); migrate(); // idempotent
   const ver = db.getFirstSync('PRAGMA user_version').user_version;
-  assert.equal(ver, 2);
+  assert.equal(ver, 3);
   const H = require('@/db/habits');
   const G = require('@/db/goals');
   const W = require('@/db/health');
@@ -22,8 +22,8 @@ test('baza: vərdişlər, məqsədlər, su, yuxu, pul', () => {
   const { today, addDays } = require('@/lib/dates');
   const T = today();
   // habits
-  const a = H.addHabit({ name: 'İdman', icon: 'dumbbell', color: 'success', frequency: 'daily', days: [0,1,2,3,4,5,6], reminderTime: '07:30' });
-  const b = H.addHabit({ name: 'Kitab', icon: 'book', color: 'brand', frequency: 'daily', days: [0,1,2,3,4,5,6], reminderTime: null });
+  const a = H.addHabit({ name: 'İdman', icon: 'dumbbell', color: 'success', frequency: 'daily', days: [0,1,2,3,4,5,6], timesPerWeek: 3, reminderTime: '07:30' });
+  const b = H.addHabit({ name: 'Kitab', icon: 'book', color: 'brand', frequency: 'daily', days: [0,1,2,3,4,5,6], timesPerWeek: 3, reminderTime: null });
   // pretend started 5 days ago
   db.runSync('UPDATE habits SET start_date = ?', [addDays(T, -5)]);
   for (let i = 1; i <= 3; i++) H.setHabitLog(a, addDays(T, -i), 'done');
@@ -36,11 +36,20 @@ test('baza: vərdişlər, məqsədlər, su, yuxu, pul', () => {
   th = H.getTodayHabits(T);
   assert.equal(th.find((h: any) => h.id === a).streak, 4);
   assert.equal(H.getMissedOn(addDays(T, -2)).map((h: any) => h.name).join(), 'Kitab');
-  H.updateHabit(b, { name: 'Kitab 20', icon: 'book', color: 'water', frequency: 'days', days: [0, 2], reminderTime: '21:00' });
+  H.updateHabit(b, { name: 'Kitab 20', icon: 'book', color: 'water', frequency: 'days', days: [0, 2], timesPerWeek: 3, reminderTime: '21:00' });
   assert.equal(H.getHabit(b).days.join(), '0,2');
   H.deleteHabit(b);
   assert.equal(H.getHabits().length, 1);
   assert.equal(db.getFirstSync('SELECT COUNT(*) n FROM habit_logs WHERE habit_id = ?', [b]).n, 0);
+  // weekly habit: hədəf dolanda bu günün siyahısından çıxır
+  const w = H.addHabit({ name: 'Qaçış', icon: 'bike', color: 'brand', frequency: 'weekly', days: [0,1,2,3,4,5,6], timesPerWeek: 1, reminderTime: null });
+  assert.equal(H.getHabit(w).timesPerWeek, 1);
+  assert.equal(H.getTodayHabits(T).find((h: any) => h.id === w).due, true);
+  H.setHabitLog(w, T, 'done');
+  const wt = H.getTodayHabits(T).find((h: any) => h.id === w);
+  assert.equal(wt.weekDone, 1);
+  assert.equal(wt.streak, 1);
+  H.deleteHabit(w);
   // goals numeric
   const g = G.addGoal({ name: 'Batareya', type: 'numeric', target: 1000, unit: 'PLN', deadline: addDays(T, 48), steps: [] });
   assert.equal(G.addGoalEntry(g, 640), false);

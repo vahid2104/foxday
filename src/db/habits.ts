@@ -3,7 +3,8 @@ import { addDays, today } from '@/lib/dates';
 import {
   currentStreak,
   dayState,
-  isDue,
+  doneInWeek,
+  isDueToday,
   type HabitFrequency,
   type HabitLogStatus,
   type HabitSchedule,
@@ -32,6 +33,7 @@ export type HabitInput = {
   color: HabitColor;
   frequency: HabitFrequency;
   days: number[];
+  timesPerWeek: number;
   reminderTime: string | null;
 };
 
@@ -46,6 +48,7 @@ type HabitRow = {
   sort: number;
   archived: number;
   start_date: string;
+  times_per_week: number;
 };
 
 function toHabit(r: HabitRow): Habit {
@@ -60,6 +63,7 @@ function toHabit(r: HabitRow): Habit {
     sort: r.sort,
     archived: r.archived === 1,
     startDate: r.start_date,
+    timesPerWeek: r.times_per_week ?? 3,
   };
 }
 
@@ -79,9 +83,9 @@ export function getHabit(id: number): Habit | null {
 export function addHabit(h: HabitInput): number {
   const max = db.getFirstSync<{ m: number | null }>('SELECT MAX(sort) AS m FROM habits')?.m ?? 0;
   const res = db.runSync(
-    `INSERT INTO habits (name, icon, color, frequency, days, reminder_time, sort, start_date)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [h.name, h.icon, h.color, h.frequency, h.days.join(','), h.reminderTime, max + 1, today()],
+    `INSERT INTO habits (name, icon, color, frequency, days, times_per_week, reminder_time, sort, start_date)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [h.name, h.icon, h.color, h.frequency, h.days.join(','), h.timesPerWeek, h.reminderTime, max + 1, today()],
   );
   notifyDbChanged();
   return res.lastInsertRowId;
@@ -89,8 +93,8 @@ export function addHabit(h: HabitInput): number {
 
 export function updateHabit(id: number, h: HabitInput) {
   db.runSync(
-    `UPDATE habits SET name = ?, icon = ?, color = ?, frequency = ?, days = ?, reminder_time = ? WHERE id = ?`,
-    [h.name, h.icon, h.color, h.frequency, h.days.join(','), h.reminderTime, id],
+    `UPDATE habits SET name = ?, icon = ?, color = ?, frequency = ?, days = ?, times_per_week = ?, reminder_time = ? WHERE id = ?`,
+    [h.name, h.icon, h.color, h.frequency, h.days.join(','), h.timesPerWeek, h.reminderTime, id],
   );
   notifyDbChanged();
 }
@@ -140,6 +144,8 @@ export type HabitWithToday = Habit & {
   todayStatus: HabitLogStatus | null;
   due: boolean;
   streak: number;
+  /** Həftəlik vərdiş: bu həftə neçə dəfə edilib (bu gün daxil). */
+  weekDone: number;
 };
 
 /** Bu gün üçün vərdişlər + seriyalar. Seriya üçün son 400 günə baxılır. */
@@ -148,20 +154,26 @@ export function getTodayHabits(date = today()): HabitWithToday[] {
   const logs = getAllLogs(addDays(date, -400), date);
   return habits.map((h) => {
     const l = logs[h.id] ?? {};
-    return { ...h, todayStatus: l[date] ?? null, due: isDue(h, date), streak: currentStreak(h, l, date) };
+    return {
+      ...h,
+      todayStatus: l[date] ?? null,
+      due: isDueToday(h, date, l),
+      streak: currentStreak(h, l, date),
+      weekDone: doneInWeek(l, date),
+    };
   });
 }
 
 /** Günün xülasəsi: neçə vərdiş planlaşdırılıb, neçəsi edilib. */
 export function getDayHabitSummary(date: string) {
   const habits = getHabits();
-  const logs = getAllLogs(date, date);
+  const logs = getAllLogs(addDays(date, -7), date);
   let due = 0;
   let done = 0;
   for (const h of habits) {
     const status = logs[h.id]?.[date];
     if (status === 'skipped') continue;
-    if (isDue(h, date) || status === 'done') {
+    if (isDueToday(h, date, logs[h.id] ?? {}) || status === 'done') {
       due++;
       if (status === 'done') done++;
     }

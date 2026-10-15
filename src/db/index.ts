@@ -120,6 +120,10 @@ const MIGRATIONS: string[] = [
     note TEXT
   );
   `,
+  // v3 — "Həftədə N dəfə" vərdişləri
+  `
+  ALTER TABLE habits ADD COLUMN times_per_week INTEGER NOT NULL DEFAULT 3;
+  `,
 ];
 
 /** Bazanı ən son versiyaya gətirir. App açılanda bir dəfə çağırılır. */

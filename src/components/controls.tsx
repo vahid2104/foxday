@@ -31,7 +31,7 @@ export function Segment<T extends string>({
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             style={[styles.segmentItem, active && { backgroundColor: colors.bgSurface }]}>
-            <Text variant="caption" color={active ? 'textPrimary' : 'textSecondary'} numberOfLines={1}>
+            <Text variant="caption" color={active ? 'textPrimary' : 'textSecondary'} numberOfLines={1} adjustsFontSizeToFit>
               {o.label}
             </Text>
           </Pressable>
