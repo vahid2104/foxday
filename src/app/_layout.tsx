@@ -10,11 +10,15 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { migrate } from '@/db';
 import i18n from '@/i18n';
 import { useSettings } from '@/store/settings';
 import { useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
+
+// Bazanı ən son versiyaya gətir (ilk açılışda cədvəlləri yaradır).
+migrate();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({

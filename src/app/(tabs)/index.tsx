@@ -1,4 +1,5 @@
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -6,14 +7,16 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Foxy } from '@/components/Foxy';
 import { Icon, type IconName } from '@/components/Icon';
 import { Card, IconBox, ProgressBar, Row, Screen, Text } from '@/components/ui';
+import { getDayEarnings } from '@/db/money';
+import { useDbQuery } from '@/db/useDbQuery';
+import { today } from '@/lib/dates';
+import { formatAmount, formatMoney, hourlyRate } from '@/lib/money';
 import { useSettings } from '@/store/settings';
 import { shadows, spacing, useTheme, type ColorTokens } from '@/theme';
-import { formatLongDate, splitMinutes } from '@/utils/date';
+import { formatLongDate, splitMinutes } from '@/lib/format-date';
 
-// ⚠️ Müvəqqəti nümunə məlumatlar. Növbəti addımda SQLite bazasından oxunacaq.
+// ⚠️ Su, yuxu və vərdişlər hələlik nümunədir — növbəti addımlarda bazaya keçəcək.
 const DEMO = {
-  earnings: 248,
-  workMin: 380,
   waterMl: 1250,
   sleepMin: 435,
   bedTime: '23:40',
@@ -40,7 +43,8 @@ export default function TodayScreen() {
   const sleep = Math.min(DEMO.sleepMin / sleepGoalMin, 1);
   // SPEC §7: günün balı
   const score = Math.round(40 * (doneCount / habits.length) + 25 * water + 25 * sleep + 10);
-  const work = splitMinutes(DEMO.workMin);
+  const earnings = useDbQuery(() => getDayEarnings(today()));
+  const perHour = hourlyRate(earnings.pln, earnings.minutes);
   const slept = splitMinutes(DEMO.sleepMin);
   const allDone = doneCount === habits.length;
 
@@ -83,19 +87,27 @@ export default function TodayScreen() {
       </Card>
 
       <Row style={{ alignItems: 'stretch' }}>
-        <Card style={{ flex: 1, gap: 6 }}>
-          <IconBox icon="bike" color="textBrand" bg="bgBrandSubtle" size={36} rounded={10} />
-          <Text variant="caption" color="textSecondary">
-            {t('today.earnings')}
-          </Text>
-          <Text variant="h2">{DEMO.earnings} PLN</Text>
-          <Text variant="caption" color="accentSuccess">
-            {t('today.perHour', {
-              hours: t('common.hoursMinutes', work),
-              rate: (DEMO.earnings / (DEMO.workMin / 60)).toFixed(0),
-            })}
-          </Text>
-        </Card>
+        <Pressable style={{ flex: 1 }} onPress={() => router.push('/income/new')}>
+          <Card style={{ flex: 1, gap: 6 }}>
+            <IconBox icon="bike" color="textBrand" bg="bgBrandSubtle" size={36} rounded={10} />
+            <Text variant="caption" color="textSecondary">
+              {t('today.earnings')}
+            </Text>
+            <Text variant="h2" numberOfLines={1} adjustsFontSizeToFit>
+              {formatMoney(earnings.pln)}
+            </Text>
+            <Text variant="caption" color={perHour != null ? 'accentSuccess' : 'textSecondary'}>
+              {perHour != null
+                ? t('today.perHour', {
+                    hours: t('common.hoursMinutes', splitMinutes(earnings.minutes)),
+                    rate: formatAmount(perHour),
+                  })
+                : earnings.sessions > 0
+                  ? t('today.ordersCount', { count: earnings.orders })
+                  : t('today.noWorkTime')}
+            </Text>
+          </Card>
+        </Pressable>
         <Card style={{ flex: 1, gap: 6 }}>
           <Row style={{ justifyContent: 'space-between' }}>
             <IconBox icon="droplet" color="accentWater" bg="bgWaterSubtle" size={36} rounded={10} />

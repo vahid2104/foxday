@@ -1,48 +1,64 @@
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { router, type Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { IconName } from '@/components/Icon';
 import { IconBox, Text } from '@/components/ui';
 import { spacing, useTheme, type ColorTokens } from '@/theme';
 
-const OPTIONS: { label: string; icon: IconName; color: keyof ColorTokens; bg: keyof ColorTokens }[] = [
-  { label: 'Gəlir', icon: 'bike', color: 'textBrand', bg: 'bgBrandSubtle' },
-  { label: 'Xərc', icon: 'arrow-down-left', color: 'accentDanger', bg: 'bgDangerSubtle' },
-  { label: 'Su', icon: 'droplet', color: 'accentWater', bg: 'bgWaterSubtle' },
-  { label: 'Vərdiş', icon: 'check', color: 'accentSuccess', bg: 'bgSuccessSubtle' },
-  { label: 'Yuxu', icon: 'moon', color: 'accentSleep', bg: 'bgSleepSubtle' },
-  { label: 'Məqsəd', icon: 'target', color: 'textBrand', bg: 'bgBrandSubtle' },
+type Option = {
+  key: 'income' | 'expense' | 'water' | 'habit' | 'sleep' | 'goal';
+  icon: IconName;
+  color: keyof ColorTokens;
+  bg: keyof ColorTokens;
+  href?: Href;
+};
+
+const OPTIONS: Option[] = [
+  { key: 'income', icon: 'bike', color: 'textBrand', bg: 'bgBrandSubtle', href: '/income/new' },
+  { key: 'expense', icon: 'arrow-down-left', color: 'accentDanger', bg: 'bgDangerSubtle', href: '/expense/new' },
+  { key: 'water', icon: 'droplet', color: 'accentWater', bg: 'bgWaterSubtle' },
+  { key: 'habit', icon: 'check', color: 'accentSuccess', bg: 'bgSuccessSubtle' },
+  { key: 'sleep', icon: 'moon', color: 'accentSleep', bg: 'bgSleepSubtle' },
+  { key: 'goal', icon: 'target', color: 'textBrand', bg: 'bgBrandSubtle' },
 ];
 
-/** Sürətli əlavə menyusu (Figma: "06 · Sürətli əlavə"). Formalar növbəti addımda qoşulacaq. */
+/** Sürətli əlavə menyusu (Figma: "06 · Sürətli əlavə"). */
 export default function AddSheet() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
+  const choose = (o: Option) => {
+    Haptics.selectionAsync();
+    if (o.href) {
+      router.replace(o.href);
+    } else {
+      Alert.alert(t('add.soonTitle'), t('add.soonText'));
+    }
+  };
+
   return (
     <View style={styles.root}>
-      <Pressable style={styles.scrim} onPress={() => router.back()} accessibilityLabel="Bağla" />
+      <Pressable style={styles.scrim} onPress={() => router.back()} accessibilityLabel={t('common.cancel')} />
       <View style={[styles.sheet, { backgroundColor: colors.bgSurface, paddingBottom: insets.bottom + 24 }]}>
         <View style={[styles.handle, { backgroundColor: colors.borderDefault }]} />
         <Text variant="h2" style={{ alignSelf: 'stretch' }}>
-          Nə əlavə edək?
+          {t('add.title')}
         </Text>
         <View style={styles.grid}>
           {OPTIONS.map((o) => (
             <Pressable
-              key={o.label}
-              onPress={() => {
-                Haptics.selectionAsync();
-                router.back();
-              }}
+              key={o.key}
+              onPress={() => choose(o)}
               style={({ pressed }) => [
                 styles.option,
-                { backgroundColor: colors.bgSurfaceAlt, opacity: pressed ? 0.7 : 1 },
+                { backgroundColor: colors.bgSurfaceAlt, opacity: pressed ? 0.7 : o.href ? 1 : 0.55 },
               ]}>
               <IconBox icon={o.icon} color={o.color} bg={o.bg} size={48} rounded={16} iconSize={22} />
-              <Text variant="bodyStrong">{o.label}</Text>
+              <Text variant="bodyStrong">{t(`add.${o.key}`)}</Text>
             </Pressable>
           ))}
         </View>

@@ -29,7 +29,7 @@ Motivasiya üçün **tülkü maskot**, animasiyalar, XP və nişanlar.
 |---|---|---|
 | Framework | **React Native + Expo** (TypeScript) | React bilgisi birbaşa işə yarayır |
 | Naviqasiya | `expo-router` | Fayl əsaslı, Next.js kimi |
-| Verilənlər bazası | `expo-sqlite` + **Drizzle ORM** | Hər şey telefonda, offline |
+| Verilənlər bazası | `expo-sqlite` (sadə SQL + `PRAGMA user_version` migrasiyaları) | Hər şey telefonda, offline. Drizzle lazım olmadı — daha sadədir |
 | State | **Zustand** | Sadə, React-a tanış |
 | Dil (i18n) | `i18next` + `react-i18next` | az (default), en, ru |
 | Animasiya | `react-native-reanimated` + **Lottie** | Maskot və təbrik animasiyaları |
@@ -266,6 +266,16 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 
 ---
 
+## 9.1 İrəliləyiş
+
+- [x] Layihə skeleti, tema, dillər, alt menyu
+- [x] Pul modulu (gəlir, xərc, məzənnə, Pul ekranı, Bu gün qazanc kartı)
+- [ ] Vərdişlər və məqsədlər
+- [ ] Su və yuxu
+- [ ] Ayarlar və onboarding
+- [ ] Təbrik animasiyaları (Lottie)
+- [ ] Əməliyyatı redaktə etmək (hazırda yalnız silmək olur)
+
 ## 10. Açıq suallar
 
 - [x] App-in adı → **Foxday**
@@ -290,3 +300,6 @@ MIUI arxa fonda işləyən tətbiqləri aqressiv şəkildə bağlayır. Bildiri�
 | 2026-10-15 | 3 mərhələ: v1 əsas → v2 izləmə → v3 oyunlaşdırma |
 | 2026-10-15 | Ad: Foxday, maskot: Foxy |
 | 2026-10-15 | Şrift: Nunito; Figma-da v1 dizayn sistemi və 20 ekran hazırlandı |
+| 2026-10-15 | Expo SDK 57 layihəsi quruldu, GitHub: vahid2104/foxday |
+| 2026-10-15 | Baza: Drizzle əvəzinə sadə SQL; pul qəpiklə (tam ədəd) saxlanılır; hər əməliyyat öz məzənnəsi ilə |
+| 2026-10-15 | Pul modulu hazır: gəlir/xərc formaları, NBP məzənnəsi (USD — A, AZN — B cədvəli, keşlə), Pul ekranı |
