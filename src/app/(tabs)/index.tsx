@@ -12,13 +12,15 @@ import { getMissedOn, getTodayHabits } from '@/db/habits';
 import { addWater, anythingLogged, getSleep, getWaterMl } from '@/db/health';
 import { getDayEarnings } from '@/db/money';
 import { getSubscriptions } from '@/db/subscriptions';
+import { getXpStats } from '@/db/xp';
 import { useDbQuery } from '@/db/useDbQuery';
 import { addDays, today } from '@/lib/dates';
 import { formatLongDate, splitMinutes } from '@/lib/format-date';
 import { dayScore } from '@/lib/habits';
 import { formatAmount, formatMoney, hourlyRate } from '@/lib/money';
+import { foxyAccessory, levelFromXp, totalXp } from '@/lib/xp';
 import { useSettings } from '@/store/settings';
-import { shadows, spacing } from '@/theme';
+import { palette, shadows, spacing } from '@/theme';
 
 /** Figma: "01 · Bu gün" */
 export default function TodayScreen() {
@@ -31,6 +33,7 @@ export default function TodayScreen() {
   const waterMl = useDbQuery(() => getWaterMl(date));
   const sleep = useDbQuery(() => getSleep(date));
   const logged = useDbQuery(() => anythingLogged(date));
+  const level = useDbQuery(() => levelFromXp(totalXp(getXpStats())).level);
   const urgentSubs = useDbQuery(() => getSubscriptions(date).filter((s) => s.status.kind === 'soon' || s.status.kind === 'overdue'));
 
   const todays = habits.filter((h) => h.due || h.todayStatus);
@@ -61,6 +64,19 @@ export default function TodayScreen() {
     }
   }, [date, onboardingDone]);
 
+  // Yeni səviyyə → təbrik (ilk açılışda səssizcə yadda saxla)
+  useEffect(() => {
+    if (!onboardingDone) return;
+    const { lastLevel, set } = useSettings.getState();
+    if (lastLevel === 0) {
+      set({ lastLevel: level });
+    } else if (level > lastLevel) {
+      set({ lastLevel: level });
+      const timer = setTimeout(() => router.push({ pathname: '/celebrate', params: { kind: 'level', level: String(level) } }), 900);
+      return () => clearTimeout(timer);
+    }
+  }, [level, onboardingDone]);
+
   let mood: FoxyMood = 'normal';
   if (allDone) mood = 'happy';
   else if (sleep && sleep.durationMin < 360) mood = 'sleepy';
@@ -82,9 +98,18 @@ export default function TodayScreen() {
           <Text variant="caption" color="textSecondary">
             {formatLongDate(new Date(), language)}
           </Text>
-          <Text variant="h1" numberOfLines={1}>
-            {t('today.greeting', { name })}
-          </Text>
+          <Row style={{ gap: 8 }}>
+            <Text variant="h1" numberOfLines={1} style={{ flexShrink: 1 }}>
+              {t('today.greeting', { name })}
+            </Text>
+            <Pressable onPress={() => router.push('/achievements')} hitSlop={6}>
+              <View style={styles.levelChip}>
+                <Text variant="label" color="textOnBrand">
+                  {t('xp.levelShort', { level })}
+                </Text>
+              </View>
+            </Pressable>
+          </Row>
         </View>
         <Pressable onPress={() => router.push('/settings')} hitSlop={8} accessibilityLabel={t('settings.title')}>
           <IconBox icon="sliders" color="textPrimary" bg="bgSurface" size={44} rounded={22} iconSize={22} />
@@ -109,7 +134,7 @@ export default function TodayScreen() {
           </Text>
           <ProgressBar value={score / 100} color="textOnBrand" track="textBrand" />
         </View>
-        <Foxy mood={mood} size={96} />
+        <Foxy mood={mood} size={96} accessory={foxyAccessory(level)} />
       </Card>
 
       {urgentSubs.length > 0 ? (
@@ -217,6 +242,12 @@ export default function TodayScreen() {
 }
 
 const styles = StyleSheet.create({
+  levelChip: {
+    backgroundColor: palette.orange500,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
   hero: {
     flexDirection: 'row',
     alignItems: 'center',

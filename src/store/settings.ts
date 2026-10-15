@@ -23,6 +23,10 @@ type SettingsState = {
   lastCelebrated: string;
   /** "Buraxılan vərdiş" modalının sonuncu dəfə göstərildiyi gün. */
   lastMissedShown: string;
+  /** Sonuncu təbrik edilmiş səviyyə (0 = hələ yoxlanmayıb). */
+  lastLevel: number;
+  /** Gündəlik kalori hədəfi. */
+  calorieGoal: number;
   set: (patch: Partial<Omit<SettingsState, 'set'>>) => void;
 };
 
@@ -44,6 +48,8 @@ export const useSettings = create<SettingsState>()(
       notifEvening: true,
       lastCelebrated: '',
       lastMissedShown: '',
+      lastLevel: 0,
+      calorieGoal: 2400,
       set: (patch) => set(patch),
     }),
     {

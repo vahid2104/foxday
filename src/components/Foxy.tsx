@@ -1,6 +1,7 @@
 import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
 
 export type FoxyMood = 'happy' | 'normal' | 'sad' | 'sleepy';
+export type FoxyAccessory = 'none' | 'scarf' | 'crown';
 
 const ORANGE = '#FF8A3D';
 const DARK_ORANGE = '#A8460C';
@@ -8,8 +9,11 @@ const CREAM = '#FFF4EC';
 const INK = '#3B3530';
 const BLUSH = '#FF9AA2';
 
-/** Foxy maskotu — Figma-dakı "Foxy" komponentinin 4 əhvalı. */
-export function Foxy({ mood = 'normal', size = 120 }: { mood?: FoxyMood; size?: number }) {
+/**
+ * Foxy maskotu — Figma-dakı "Foxy" komponentinin 4 əhvalı.
+ * accessory: səviyyə ilə açılan görünüşlər (4+ şərf, 8+ tac).
+ */
+export function Foxy({ mood = 'normal', size = 120, accessory = 'none' }: { mood?: FoxyMood; size?: number; accessory?: FoxyAccessory }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 120 120">
       {/* qulaqlar */}
@@ -28,6 +32,21 @@ export function Foxy({ mood = 'normal', size = 120 }: { mood?: FoxyMood; size?: 
         </G>
       )}
       <Face mood={mood} />
+      {accessory === 'scarf' && (
+        <G>
+          <Path d="M28 94 Q60 114 92 94 L95 102 Q60 124 25 102 Z" fill="#3D8BE5" />
+          <Path d="M80 101 L90 118 L82 120 L75 105 Z" fill="#2F6FBF" />
+        </G>
+      )}
+      {accessory === 'crown' && (
+        <Path
+          d="M41 31 L44 13 L53 23 L60 8 L67 23 L76 13 L79 31 Z"
+          fill="#FFC83D"
+          stroke="#E0A400"
+          strokeWidth={2}
+          strokeLinejoin="round"
+        />
+      )}
     </Svg>
   );
 }

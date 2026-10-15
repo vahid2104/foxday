@@ -176,7 +176,9 @@ export default function SettingsScreen() {
 
       <SectionLabel>{t('settings.other')}</SectionLabel>
       <Card style={{ gap: 0, paddingVertical: 4 }}>
-        <ListRow first icon="chart" iconColor="accentSleep" iconBg="bgSleepSubtle" title={t('settings.reports')} onPress={() => router.push('/reports')} />
+        <ListRow first icon="sparkle" title={t('xp.title')} onPress={() => router.push('/achievements')} />
+        <ListRow icon="chart" iconColor="accentSleep" iconBg="bgSleepSubtle" title={t('settings.reports')} onPress={() => router.push('/reports')} />
+        <ListRow icon="refresh" title={t('subs.title')} onPress={() => router.push('/subscriptions')} />
         <ListRow icon="phone" title={t('settings.miui')} subtitle={t('settings.miuiSub')} onPress={openMiui} />
         <ListRow icon="shield" iconColor="accentSuccess" iconBg="bgSuccessSubtle" title={t('settings.backup')} value={t('settings.soon')} />
       </Card>

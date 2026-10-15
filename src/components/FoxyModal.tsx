@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Button } from '@/components/form';
-import { Foxy, type FoxyMood } from '@/components/Foxy';
+import { Foxy, type FoxyAccessory, type FoxyMood } from '@/components/Foxy';
 import { Text } from '@/components/ui';
 import { radius, spacing, useTheme } from '@/theme';
 
@@ -26,8 +26,10 @@ export function FoxyModal({
   children,
   cta,
   background,
+  accessory,
 }: {
   mood: FoxyMood;
+  accessory?: FoxyAccessory;
   title: string;
   children?: ReactNode;
   cta: string;
@@ -60,7 +62,7 @@ export function FoxyModal({
       {background}
       <Animated.View style={[styles.card, { backgroundColor: colors.bgSurface }, cardStyle]}>
         <Animated.View style={foxStyle}>
-          <Foxy mood={mood} size={140} />
+          <Foxy mood={mood} size={140} accessory={accessory} />
         </Animated.View>
         <Text variant="h1" style={{ textAlign: 'center' }}>
           {title}
